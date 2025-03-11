@@ -1,0 +1,29 @@
+{
+  "configurations" : [
+    {
+      "id" : "116532E7-C5F8-498C-A84E-6B9E249CCF72",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:UalaTechnicalTest.xcodeproj",
+      "identifier" : "7924E0B72D80DF630027A48A",
+      "name" : "UalaTechnicalTest"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:UalaTechnicalTest.xcodeproj",
+        "identifier" : "7924E0C72D80DF640027A48A",
+        "name" : "UalaTechnicalTestTests"
+      }
+    }
+  ],
+  "version" : 1
+}
