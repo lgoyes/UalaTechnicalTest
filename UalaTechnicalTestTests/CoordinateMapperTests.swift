@@ -32,16 +32,32 @@ struct CoordinateFactory {
     }
 }
 
-struct CoordinateMapperTests {
+class CoordinateMapperTests {
     
     let sut = CoordinateMapper()
+    var apiCoordinate: APICoordinate!
+    var result: Coordinate!
 
-    @Test("GIVEN some APICoordinate, WHEN map, THEN return a valid Coordinate", arguments: [(CoordinateFactory.createSomeAPICoordinates(), CoordinateFactory.createSomeCoordinates())])
-    func map(input: APICoordinate, expectedResult: Coordinate) {
-        let result = sut.map(input)
-        #expect(result == expectedResult)
+    @Test("GIVEN some APICoordinate, WHEN map, THEN return a valid Coordinate")
+    func map() {
+        GIVEN_someAPICoordinate()
+        WHEN_map()
+        THEN_itShouldCreateSomeValidCoordinate()
     }
     
+    func GIVEN_someAPICoordinate() {
+        apiCoordinate = CoordinateFactory.createSomeAPICoordinates()
+    }
+    
+    func WHEN_map() {
+        result = sut.map(apiCoordinate)
+    }
+    
+    func THEN_itShouldCreateSomeValidCoordinate() {
+        #expect(result == CoordinateFactory.createSomeCoordinates())
+    }
+    
+    // Using arguments just for showing-off
     @Test("GIVEN some Coordinate, WHEN invert, THEN return a valid APICoordinate", arguments: [(CoordinateFactory.createSomeCoordinates(), CoordinateFactory.createSomeAPICoordinates())])
     func map(input: Coordinate, expectedResult: APICoordinate) {
         let result = sut.invert(input)

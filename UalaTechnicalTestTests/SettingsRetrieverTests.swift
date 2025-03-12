@@ -9,7 +9,7 @@ import Foundation
 import Testing
 @testable import UalaTechnicalTest
 
-class PlistReaderStub: PlistReaderProtocol {
+final class PlistReaderStub: PlistReaderProtocol {
     var result: [String: Any]?
     func loadPlist(filename: String, bundle: Bundle) -> [String: Any]? {
         result

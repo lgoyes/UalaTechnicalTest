@@ -36,20 +36,35 @@ struct CityFactory {
     }
 }
 
-struct CityMapperTests {
+final class CityMapperTests {
     
     let sut = CityMapper(coordinateMapper: CoordinateMapper())
+    var apiCity: APICity!
+    var result: City!
 
-    @Test("GIVEN some APICity, WHEN map, THEN return a valid City", arguments: [(CityFactory.createSomeAPICity(), CityFactory.createSomeCity())])
-    func map(input: APICity, expectedResult: City) {
-        let result = sut.map(input)
-        #expect(result == expectedResult)
+    @Test("GIVEN some APICity, WHEN map, THEN return a valid City")
+    func map() {
+        GIVEN_someAPICity()
+        WHEN_map()
+        THEN_itShouldCreateSomeValidCity()
     }
     
+    func GIVEN_someAPICity() {
+        apiCity = CityFactory.createSomeAPICity()
+    }
+    
+    func WHEN_map() {
+        result = sut.map(apiCity)
+    }
+    
+    func THEN_itShouldCreateSomeValidCity() {
+        #expect(result == CityFactory.createSomeCity())
+    }
+    
+    // Using arguments just for showing-off
     @Test("GIVEN some City, WHEN invert, THEN return a valid APICity", arguments: [(CityFactory.createSomeCity(), CityFactory.createSomeAPICity())])
     func invert(input: City, expectedResult: APICity) {
         let result = sut.invert(input)
         #expect(result == expectedResult)
     }
-
 }
