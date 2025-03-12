@@ -7,7 +7,19 @@
 
 import SwiftUI
 
+class ContentFactory {
+    func create() -> ContentView {
+        .init(viewModel: .init())
+    }
+}
+
+class ContentViewModel: ObservableObject {
+    
+}
+
 struct ContentView: View {
+    @ObservedObject var viewModel: ContentViewModel
+    
     var body: some View {
         VStack {
             Image(systemName: "globe")
@@ -20,5 +32,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    ContentFactory().create()
 }

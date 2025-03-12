@@ -11,7 +11,7 @@ import SwiftUI
 struct UalaTechnicalTestApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentFactory().create()
         }
     }
 }

@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		79BA1ECE2D81D17000A8DC7F /* Mobile Challenge - v0.7.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 79BA1ECD2D81D17000A8DC7F /* Mobile Challenge - v0.7.pdf */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		7924E0C92D80DF640027A48A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -19,6 +23,7 @@
 /* Begin PBXFileReference section */
 		7924E0B82D80DF630027A48A /* UalaTechnicalTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UalaTechnicalTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7924E0C82D80DF640027A48A /* UalaTechnicalTestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UalaTechnicalTestTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		79BA1ECD2D81D17000A8DC7F /* Mobile Challenge - v0.7.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Mobile Challenge - v0.7.pdf"; sourceTree = "<group>"; };
 		79C608792D80E9090089BE17 /* UalaTechnicalTest.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = UalaTechnicalTest.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -56,6 +61,7 @@
 		7924E0AF2D80DF630027A48A = {
 			isa = PBXGroup;
 			children = (
+				79BA1ECD2D81D17000A8DC7F /* Mobile Challenge - v0.7.pdf */,
 				79C608792D80E9090089BE17 /* UalaTechnicalTest.xctestplan */,
 				7924E0BA2D80DF630027A48A /* UalaTechnicalTest */,
 				7924E0CB2D80DF640027A48A /* UalaTechnicalTestTests */,
@@ -164,6 +170,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				79BA1ECE2D81D17000A8DC7F /* Mobile Challenge - v0.7.pdf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
