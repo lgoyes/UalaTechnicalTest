@@ -1,5 +1,5 @@
 //
-//  CityMapperTests.swift
+//  APICityMapperTests.swift
 //  UalaTechnicalTest
 //
 //  Created by Luis David Goyes Garces on 11/3/25.
@@ -36,7 +36,7 @@ struct CityFactory {
     }
 }
 
-final class CityMapperTests {
+final class APICityMapperTests {
     
     let sut = CityMapper(coordinateMapper: CoordinateMapper())
     var apiCity: APICity!

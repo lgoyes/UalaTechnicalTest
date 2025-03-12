@@ -14,7 +14,7 @@ class ContentFactory {
 }
 
 class ContentViewModel: ObservableObject {
-    
+    @Published var cities: [CityRowViewModel]?
 }
 
 struct ContentView: View {
@@ -32,5 +32,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentFactory().create()
+    let viewModel = ContentViewModel()
+    ContentView(viewModel: viewModel)
 }

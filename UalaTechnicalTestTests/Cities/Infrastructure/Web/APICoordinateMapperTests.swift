@@ -1,5 +1,5 @@
 //
-//  CoordinateMapperTests.swift
+//  APICoordinateMapperTests.swift
 //  UalaTechnicalTestTests
 //
 //  Created by Luis David Goyes Garces on 11/3/25.
@@ -32,7 +32,7 @@ struct CoordinateFactory {
     }
 }
 
-class CoordinateMapperTests {
+class APICoordinateMapperTests {
     
     let sut = CoordinateMapper()
     var apiCoordinate: APICoordinate!
