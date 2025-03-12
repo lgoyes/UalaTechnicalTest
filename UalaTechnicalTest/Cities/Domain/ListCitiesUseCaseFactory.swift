@@ -6,7 +6,7 @@
 //
 
 class ListCitiesUseCaseFactory {
-    func create() -> ListCitiesUseCase {
+    func create() -> some UseCase {
         let repository = CityListRemoteRepositoryFactory().create()
         let result = DefaultListCitiesUseCase(repository: repository)
         return result

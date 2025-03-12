@@ -9,9 +9,8 @@ enum ListCitiesUseCaseError: Swift.Error {
     case networkError
 }
 
-protocol ListCitiesUseCase {
-    func execute() async throws(ListCitiesUseCaseError)
-    func getResult() -> [City]
+protocol ListCitiesUseCase: UseCase where Output == [City] {
+    
 }
 
 class DefaultListCitiesUseCase: ListCitiesUseCase {
@@ -31,7 +30,7 @@ class DefaultListCitiesUseCase: ListCitiesUseCase {
         }
     }
     
-    func getResult() -> [City] {
+    func getResult() throws -> [City] {
         return result
     }
 }
