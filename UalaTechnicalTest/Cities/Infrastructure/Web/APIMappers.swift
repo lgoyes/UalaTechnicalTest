@@ -17,7 +17,7 @@ class CityMapper: CityMapperProtocol {
     }
     
     func map(_ city: APICity) -> City {
-        .init(country: city.country, name: city.name, id: city.id, coordinates: coordinateMapper.map(city.coordinates))
+        .init(country: city.country, name: city.name, id: city.id, favorite: false, coordinates: coordinateMapper.map(city.coordinates))
     }
     
     func invert(_ city: City) -> APICity {

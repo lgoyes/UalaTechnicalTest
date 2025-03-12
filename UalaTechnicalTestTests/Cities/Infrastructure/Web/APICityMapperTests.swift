@@ -28,7 +28,7 @@ extension City: @retroactive Equatable {
 
 struct CityFactory {
     static func createSomeCity() -> City {
-        City(country: CityConstant.someCountry, name: CityConstant.someName, id: CityConstant.someId, coordinates: CoordinateFactory.createSomeCoordinates())
+        City(country: CityConstant.someCountry, name: CityConstant.someName, id: CityConstant.someId, favorite: CityConstant.favorite, coordinates: CoordinateFactory.createSomeCoordinates())
     }
     
     static func createSomeAPICity() -> APICity {
