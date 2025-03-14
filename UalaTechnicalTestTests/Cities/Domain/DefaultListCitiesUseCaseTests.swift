@@ -10,7 +10,7 @@ import Testing
 
 class CityListRemoteRepositoryStub: CityListRemoteRepository {
     var error: CityListRemoteRepositoryError?
-    var result: [City] = [CityFactory.createSomeCity()]
+    var result: [City] = [CityFactory.create()]
     func listAllCities() async throws(CityListRemoteRepositoryError) -> [City] {
         if let error {
             throw error
@@ -32,7 +32,7 @@ class DefaultListCitiesUseCaseTests {
     func fetchCorrectResults() async throws {
         try await sut.execute()
         let result = try sut.getResult()
-        #expect(result == [CityFactory.createSomeCity()])
+        #expect(result == [CityFactory.create()])
     }
     
     @Test("GIVEN some error from the repository, WHEN execute, THEN it should throw an error")

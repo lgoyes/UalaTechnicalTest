@@ -26,19 +26,11 @@ extension City: @retroactive Equatable {
     }
 }
 
-struct CityFactory {
-    static func createSomeCity() -> City {
-        City(country: CityConstant.someCountry, name: CityConstant.someName, id: CityConstant.someId, favorite: CityConstant.favorite, coordinates: CoordinateFactory.createSomeCoordinates())
-    }
-    
-    static func createSomeAPICity() -> APICity {
-        APICity(country: CityConstant.someCountry, name: CityConstant.someName, id: CityConstant.someId, coordinates: CoordinateFactory.createSomeAPICoordinates())
-    }
-}
+
 
 final class APICityMapperTests {
     
-    let sut = CityMapper(coordinateMapper: CoordinateMapper())
+    let sut = APICityMapper(coordinateMapper: APICoordinateMapper())
     var apiCity: APICity!
     var result: City!
 
@@ -50,7 +42,7 @@ final class APICityMapperTests {
     }
     
     func GIVEN_someAPICity() {
-        apiCity = CityFactory.createSomeAPICity()
+        apiCity = APICityFactory.create()
     }
     
     func WHEN_map() {
@@ -58,11 +50,11 @@ final class APICityMapperTests {
     }
     
     func THEN_itShouldCreateSomeValidCity() {
-        #expect(result == CityFactory.createSomeCity())
+        #expect(result == CityFactory.create())
     }
     
     // Using arguments just for showing-off
-    @Test("GIVEN some City, WHEN invert, THEN return a valid APICity", arguments: [(CityFactory.createSomeCity(), CityFactory.createSomeAPICity())])
+    @Test("GIVEN some City, WHEN invert, THEN return a valid APICity", arguments: [(CityFactory.create(), APICityFactory.create())])
     func invert(input: City, expectedResult: APICity) {
         let result = sut.invert(input)
         #expect(result == expectedResult)

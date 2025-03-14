@@ -20,8 +20,8 @@ class CityListRemoteRepositoryFactory {
             client = LoggingAPIClient(decorated: client, logger: logger)
         }
         let baseURL = getBaseURL()
-        let coordinateMapper = CoordinateMapper()
-        let cityMapper = CityMapper(coordinateMapper: coordinateMapper)
+        let coordinateMapper = APICoordinateMapper()
+        let cityMapper = APICityMapper(coordinateMapper: coordinateMapper)
         let result = DefaultCityListRemoteRepository(apiClient: client, baseURL: baseURL, cityMapper: cityMapper)
         return result
     }

@@ -9,6 +9,6 @@
 
 struct DBCityFactory {
     static func create() -> DBCity {
-        return DBCity(country: "CO", name: "Medellín", id: 1, latitude: 1.2, longitude: 3.4)
+        return DBCity(country: CityConstant.someCountry, name: CityConstant.someName, id: CityConstant.someId, latitude: CityConstant.someLatitude, longitude: CityConstant.someLongitude, favorite: CityConstant.favorite)
     }
 }

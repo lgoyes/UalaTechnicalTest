@@ -5,14 +5,14 @@
 //  Created by Luis David Goyes Garces on 11/3/25.
 //
 
-protocol CityMapperProtocol {
+protocol APICityMapperProtocol {
     func map(_ city: APICity) -> City
     func invert(_ city: City) -> APICity
 }
 
-class CityMapper: CityMapperProtocol {
-    private let coordinateMapper: CoordinateMapper
-    init(coordinateMapper: CoordinateMapper) {
+class APICityMapper: APICityMapperProtocol {
+    private let coordinateMapper: APICoordinateMapper
+    init(coordinateMapper: APICoordinateMapper) {
         self.coordinateMapper = coordinateMapper
     }
     
@@ -25,7 +25,7 @@ class CityMapper: CityMapperProtocol {
     }
 }
 
-class CoordinateMapper {
+class APICoordinateMapper {
     func map(_ coordinate: APICoordinate) -> Coordinate {
         .init(latitude: coordinate.latitude, longitude: coordinate.longitude)
     }

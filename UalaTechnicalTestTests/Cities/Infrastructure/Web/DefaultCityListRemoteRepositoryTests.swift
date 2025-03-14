@@ -24,13 +24,13 @@ class DefaultCityListRemoteRepositoryTests {
     
     var sut: DefaultCityListRemoteRepository!
     let clientStub: APIClientStub
-    let cityMapper: CityMapper
+    let cityMapper: APICityMapper
     var result: [City]!
     var delayed_listAllCities_closure: (() async throws -> Void)!
     
     init() {
         clientStub = APIClientStub()
-        cityMapper = CityMapper(coordinateMapper: CoordinateMapper())
+        cityMapper = APICityMapper(coordinateMapper: APICoordinateMapper())
         sut = DefaultCityListRemoteRepository(apiClient: clientStub, baseURL: "", cityMapper: cityMapper)
     }
     
@@ -43,7 +43,7 @@ class DefaultCityListRemoteRepositoryTests {
     
     func GIVEN_someValidResponseFromAPIClient() {
         clientStub.response = [
-            CityFactory.createSomeAPICity()
+            APICityFactory.create()
         ]
     }
     
@@ -52,7 +52,7 @@ class DefaultCityListRemoteRepositoryTests {
     }
     
     func THEN_itShouldReturnSomeCities() {
-        #expect(result[0] == CityFactory.createSomeCity())
+        #expect(result[0] == CityFactory.create())
     }
     
     @Test("GIVEN some invalid response from APIClient, WHEN listAllCities, THEN it should throw an error")

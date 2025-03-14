@@ -10,9 +10,9 @@ import Foundation
 class DefaultCityListRemoteRepository: CityListRemoteRepository {
     private let apiClient: RESTAPIFetchable
     private let baseURL: String
-    private let cityMapper: CityMapper
+    private let cityMapper: APICityMapper
     
-    init(apiClient: RESTAPIFetchable, baseURL: String, cityMapper: CityMapper) {
+    init(apiClient: RESTAPIFetchable, baseURL: String, cityMapper: APICityMapper) {
         self.apiClient = apiClient
         self.baseURL = baseURL
         self.cityMapper = cityMapper
@@ -21,7 +21,7 @@ class DefaultCityListRemoteRepository: CityListRemoteRepository {
     func listAllCities() async throws(CityListRemoteRepositoryError) -> [City] {
         do {
             let response: [APICity] = try await apiClient.fetchData(from: baseURL)
-            return response.map { cityMapper.map($0) }
+            return response.map { [unowned self] in cityMapper.map($0) }
         } catch {
             throw .networkError
         }

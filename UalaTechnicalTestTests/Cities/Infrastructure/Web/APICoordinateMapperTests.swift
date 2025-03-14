@@ -34,7 +34,7 @@ struct CoordinateFactory {
 
 class APICoordinateMapperTests {
     
-    let sut = CoordinateMapper()
+    let sut = APICoordinateMapper()
     var apiCoordinate: APICoordinate!
     var result: Coordinate!
 
