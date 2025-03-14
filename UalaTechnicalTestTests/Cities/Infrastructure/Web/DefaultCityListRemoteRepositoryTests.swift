@@ -10,9 +10,9 @@ import Testing
 
 class APIClientStub: RESTAPIFetchable {
     var response: Decodable!
-    var error: Error?
+    var error: RESTAPIFetchableError?
     
-    func fetchData<T>(from urlString: String) async throws -> T where T : Decodable {
+    func fetchData<T>(from urlString: String) async throws(RESTAPIFetchableError) -> T where T : Decodable {
         if let error {
             throw error
         }
@@ -63,7 +63,7 @@ class DefaultCityListRemoteRepositoryTests {
     }
     
     func GIVEN_someInvalidResponseFromAPIClient() {
-        clientStub.error = APIClient.Error.badURL
+        clientStub.error = RESTAPIFetchableError.badURL
     }
     
     func WHEN_listAllCities_delayed() {

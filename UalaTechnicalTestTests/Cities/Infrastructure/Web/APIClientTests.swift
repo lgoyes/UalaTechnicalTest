@@ -50,7 +50,7 @@ final class APIClientTests {
         }
     }
     
-    func THEN_itShouldThrowAn(error expectedError: APIClient.Error) async {
+    func THEN_itShouldThrowAn(error expectedError: RESTAPIFetchableError) async {
         await #expect(throws: expectedError) {
             try await delayed_WHEN_closure()
         }
@@ -91,7 +91,8 @@ final class APIClientTests {
         GIVEN_someInvalidData()
         GIVEN_someResponse(statusCode: 200)
         WHEN_callingFetchData_delayed()
-        await THEN_itShouldThrowAn(error: .decodingFailed)
+        let error: NSError = NSError(domain: NSCocoaErrorDomain, code: 4864)
+        await THEN_itShouldThrowAn(error: .decodingFailed(error))
     }
     
     func GIVEN_someInvalidData() {

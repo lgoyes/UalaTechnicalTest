@@ -9,8 +9,16 @@ class CityListRemoteRepositoryFactory {
     private enum Constant {
         static let baseURLKey = "cities_url"
     }
+    private var logger: Logger?
+    init(logger: Logger? = nil) {
+        self.logger = logger
+    }
+    
     func create() -> CityListRemoteRepository {
-        let client = APIClient()
+        var client: RESTAPIFetchable = APIClient()
+        if let logger {
+            client = LoggingAPIClient(decorated: client, logger: logger)
+        }
         let baseURL = getBaseURL()
         let coordinateMapper = CoordinateMapper()
         let cityMapper = CityMapper(coordinateMapper: coordinateMapper)

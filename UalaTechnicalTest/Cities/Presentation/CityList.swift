@@ -7,9 +7,14 @@
 
 import SwiftUI
 
-struct CityListViewModel: Observable {
+class CityListViewModel: ObservableObject {
     @Binding var cities: [City]
     @Binding var selectedCity: City?
+    
+    init(cities: Binding<[City]>, selectedCity: Binding<City?>) {
+        self._cities = cities
+        self._selectedCity = selectedCity
+    }
     
     func select(city: City) {
         selectedCity = city
@@ -18,7 +23,7 @@ struct CityListViewModel: Observable {
 
 struct CityListView: View {
 
-    @State var viewModel: CityListViewModel
+    @ObservedObject var viewModel: CityListViewModel
     
     var body: some View {
         List(viewModel.cities, id: \.id) { city in

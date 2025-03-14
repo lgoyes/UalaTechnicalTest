@@ -24,6 +24,6 @@ struct APICity: Decodable {
     enum CodingKeys: String, CodingKey {
         case country, name
         case id = "_id"
-        case coordinates = "coor"
+        case coordinates = "coord"
     }
 }

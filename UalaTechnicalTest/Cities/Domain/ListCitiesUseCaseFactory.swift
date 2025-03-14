@@ -6,8 +6,13 @@
 //
 
 class ListCitiesUseCaseFactory {
+    private var logger: Logger?
+    init(logger: Logger? = nil) {
+        self.logger = logger
+    }
+
     func create() -> some UseCase {
-        let repository = CityListRemoteRepositoryFactory().create()
+        let repository = CityListRemoteRepositoryFactory(logger: logger).create()
         let result = DefaultListCitiesUseCase(repository: repository)
         return result
     }

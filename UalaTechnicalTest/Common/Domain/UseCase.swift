@@ -6,7 +6,8 @@
 //
 
 protocol Command {
-    func execute() async throws
+    associatedtype ErrorType: Swift.Error
+    func execute() async throws(ErrorType)
 }
 
 protocol Resultable {
