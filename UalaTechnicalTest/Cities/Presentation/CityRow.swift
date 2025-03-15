@@ -7,13 +7,6 @@
 
 import SwiftUI
 
-struct CityRowViewModel {
-    let title: String
-    let subtitle: String
-    let favorite: Bool
-    let selected: Bool
-}
-
 struct CityRowView: View {
     private enum Constant {
         enum FavoriteIconName {
@@ -21,7 +14,9 @@ struct CityRowView: View {
             static let notFavorite = "star"
         }
     }
-    let model: CityRowViewModel
+    let model: CityViewModel
+    var onFavoriteTapped: (() -> Void)?
+    var onSelected: (() -> Void)?
 
     var body: some View {
         HStack {
@@ -30,6 +25,13 @@ struct CityRowView: View {
             }
             Spacer()
             favoriteIcon()
+                .onTapGesture {
+                    onFavoriteTapped?()
+                }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onSelected?()
         }
         .background(model.selected ? .blue.opacity(0.5) : .clear)
     }
@@ -49,19 +51,11 @@ struct CityRowView: View {
     }
 }
 
-class CityRowFactory {
-    func create(with city: City, selectedCity: City?) -> CityRowView {
-        let title = "\(city.name), \(city.country)"
-        let subtitle = "Lat: \(city.coordinates.latitude), Lon: \(city.coordinates.longitude)"
-        let viewModel = CityRowViewModel(title: title, subtitle: subtitle, favorite: city.favorite, selected: city.id == selectedCity?.id ?? -1)
-        return CityRowView(model: viewModel)
-    }
-}
-
 #Preview(traits: .sizeThatFitsLayout) {
-    let favoriteModel = CityRowViewModel(title: "Medellín, CO", subtitle: "Lat: 1, Lon: 2", favorite: true, selected: true)
-    CityRowView(model: favoriteModel)
-    
-    let notFavoriteModel = CityRowViewModel(title: "Medellín, CO", subtitle: "Lat: 1, Lon: 2", favorite: false, selected: false)
-    CityRowView(model: notFavoriteModel)
+    @Previewable @State var viewModel = CityViewModel(id: 1, title: "Medellín, CO", subtitle: "Lat: 1, Lon: 2", favorite: true, selected: true)
+    CityRowView(model: viewModel, onFavoriteTapped: {
+        viewModel.favorite.toggle()
+    }, onSelected:  {
+        viewModel.selected.toggle()
+    })
 }

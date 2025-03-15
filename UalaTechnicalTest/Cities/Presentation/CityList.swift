@@ -7,36 +7,49 @@
 
 import SwiftUI
 
-class CityListViewModel: ObservableObject {
-    @Binding var cities: [City]
-    @Binding var selectedCity: City?
+struct CityListViewModel {
+    @Binding var cities: [CityViewModel]
+    @Binding var selectedCity: CityViewModel?
     
-    init(cities: Binding<[City]>, selectedCity: Binding<City?>) {
-        self._cities = cities
-        self._selectedCity = selectedCity
+    func select(city: CityViewModel) {
+        turnOldSelectedOff()
+        turnNewSelectedOn(city)
     }
     
-    func select(city: City) {
+    private func turnOldSelectedOff() {
+        selectedCity?.selected = false
+    }
+    
+    private func turnNewSelectedOn(_ city: CityViewModel) {
         selectedCity = city
+        selectedCity?.selected.toggle()
+    }
+    
+    func favoriteTapped(for city: CityViewModel) {
+        guard let favoriteTappedCityIndex = cities.firstIndex(where: { $0.id == city.id }) else {
+            return
+        }
+        cities[favoriteTappedCityIndex].favorite.toggle()
     }
 }
 
 struct CityListView: View {
 
-    @ObservedObject var viewModel: CityListViewModel
+    var viewModel: CityListViewModel
     
     var body: some View {
         List(viewModel.cities, id: \.id) { city in
-            CityRowFactory().create(with: city, selectedCity: viewModel.selectedCity)
-                .onTapGesture {
-                    viewModel.select(city: city)
-                }
+            CityRowView(model: city) {
+                viewModel.favoriteTapped(for: city)
+            } onSelected: {
+                viewModel.select(city: city)
+            }
         }
     }
 }
 
 class CityListFactory {
-    func create(cities: Binding<[City]>, selectedCity: Binding<City?>) -> CityListView {
+    func create(cities: Binding<[CityViewModel]>, selectedCity: Binding<CityViewModel?>) -> CityListView {
         let viewModel = CityListViewModel(cities: cities, selectedCity: selectedCity)
         let result = CityListView(viewModel: viewModel)
         return result
@@ -44,7 +57,12 @@ class CityListFactory {
 }
 
 #Preview {
-    let city = City(country: "CO", name: "Medellin", id: 1, favorite: true, coordinates: Coordinate(latitude: 6.25184, longitude: -75.56359))
-    let viewModel = CityListViewModel(cities: .constant([city]), selectedCity: .constant(nil))
+    @Previewable @State var cities: [CityViewModel] = [
+        CityViewModel(id: 1, title: "Medellín, CO", subtitle: "Lat: 1, Lon: 2", favorite: false, selected: false),
+        CityViewModel(id: 2, title: "Medellín, CO", subtitle: "Lat: 1, Lon: 2", favorite: false, selected: false)
+    ]
+    @Previewable @State var selected: CityViewModel? = nil
+
+    let viewModel = CityListViewModel(cities: $cities, selectedCity: $selected)
     CityListView(viewModel: viewModel)
 }

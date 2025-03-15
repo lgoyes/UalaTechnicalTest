@@ -16,7 +16,7 @@ class ListCitiesUseCaseFactory {
         self.logger = logger
     }
 
-    func create() -> some UseCase {
+    func create() -> any ListCitiesUseCase {
         let remoteRepository = CityListRemoteRepositoryFactory(logger: logger).create()
         let localRepository = CityListLocalRepositoryFactory().create(with: context)
         let result = DefaultListCitiesUseCase(remoteRepository: remoteRepository, localRepository: localRepository)
