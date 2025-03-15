@@ -12,7 +12,8 @@ protocol Command {
 
 protocol Resultable {
     associatedtype Output
-    func getResult() throws -> Output
+    associatedtype ErrorType: Swift.Error
+    func getResult() throws(ErrorType) -> Output
 }
 
 typealias UseCase = Command & Resultable

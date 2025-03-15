@@ -78,3 +78,8 @@ extension DefaultCityLocalRepository: CityUpdateLocalRepository {
         dbCityToUpdate.longitude = city.coordinates.longitude
     }
 }
+
+/// TODO:
+/// 1. Remove update
+/// 2. Change create to check first that no other entry exists with the same id
+
