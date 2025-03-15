@@ -9,7 +9,7 @@ import Foundation
 import Testing
 @testable import UalaTechnicalTest
 
-class TestingAPIClient: APIClient {
+final class TestingAPIClient: APIClient {
     enum Error: Swift.Error {
         case someError
     }
@@ -27,11 +27,11 @@ struct DummyType: Codable { }
 
 final class APIClientTests {
     
-    let sut = TestingAPIClient()
+    private let sut = TestingAPIClient()
     
-    var url: String!
-    var delayed_WHEN_closure: (() async throws -> ())!
-    var decodedData: DummyType!
+    private var url: String!
+    private var delayed_WHEN_closure: (() async throws -> ())!
+    private var decodedData: DummyType!
     
     @Test("GIVEN some invalid URL, WHEN call fetch data, THEN it should throw an invalidURL error")
     func invalidURL() async {

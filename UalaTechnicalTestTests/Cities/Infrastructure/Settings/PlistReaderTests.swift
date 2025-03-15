@@ -11,11 +11,11 @@ import Testing
 
 final class PlistReaderTests {
 
-    let sut = PlistReader()
+    private let sut = PlistReader()
     
-    var bundle: Bundle!
-    var plistFilename: String!
-    var plistFile: [String: Any]?
+    private var bundle: Bundle!
+    private var plistFilename: String!
+    private var plistFile: [String: Any]?
     
     @Test("GIVEN some valid bundle, some existing plist filename, WHEN trying to load plist, THEN it should return the loaded plist")
     func readSomePlistFile() throws {

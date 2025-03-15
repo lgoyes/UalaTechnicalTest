@@ -21,9 +21,9 @@ struct DBCityComparator {
 
 final class DBCityMapperTests {
     
-    let sut = DBCityMapper()
-    var dbCity: DBCity!
-    var result: City!
+    private let sut = DBCityMapper()
+    private var dbCity: DBCity!
+    private var result: City!
 
     @Test("GIVEN some DBCity, WHEN map, THEN return a valid City")
     func map() {

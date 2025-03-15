@@ -31,9 +31,9 @@ extension City: @retroactive Equatable {
 
 final class APICityMapperTests {
     
-    let sut = APICityMapper(coordinateMapper: APICoordinateMapper())
-    var apiCity: APICity!
-    var result: City!
+    private let sut = APICityMapper(coordinateMapper: APICoordinateMapper())
+    private var apiCity: APICity!
+    private var result: City!
 
     @Test("GIVEN some APICity, WHEN map, THEN return a valid City")
     func map() {

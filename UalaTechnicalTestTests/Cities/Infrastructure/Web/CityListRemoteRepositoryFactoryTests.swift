@@ -8,10 +8,10 @@
 import Testing
 @testable import UalaTechnicalTest
 
-class CityListRemoteRepositoryFactoryTests {
+final class CityListRemoteRepositoryFactoryTests {
     
-    let sut = CityListRemoteRepositoryFactory()
-    var result: CityListRemoteRepository!
+    private let sut = CityListRemoteRepositoryFactory()
+    private var result: CityListRemoteRepository!
 
     @Test("WHEN create, THEN it should create some valid repository")
     func map() {

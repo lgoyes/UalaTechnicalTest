@@ -9,7 +9,7 @@ import Testing
 import SwiftData
 @testable import UalaTechnicalTest
 
-class CityListLocalRepositoryFactoryTests {
+final class CityListLocalRepositoryFactoryTests {
     @Test("GIVEN some contex t, WHEN create, THEN it should create a valid repository")
     func create() {
         let context = ModelContextStubFactory().create()

@@ -8,7 +8,7 @@
 import Testing
 @testable import UalaTechnicalTest
 
-class DBFacadeStub: DBFacade {
+final class DBFacadeStub: DBFacade {
     var createCalled = false
     var removeCalled = false
     var cities = [DBCity]()
@@ -28,7 +28,7 @@ class DBFacadeStub: DBFacade {
     }
 }
 
-class DefaultCityLocalRepositoryTests {
+final class DefaultCityLocalRepositoryTests {
     private enum Constant {
         static let updatedCountry = "updated-country"
     }

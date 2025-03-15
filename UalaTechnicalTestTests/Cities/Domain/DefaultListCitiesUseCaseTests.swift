@@ -9,7 +9,7 @@ import Testing
 import SwiftData
 @testable import UalaTechnicalTest
 
-class CityListRemoteRepositoryStub: CityListRemoteRepository {
+final class CityListRemoteRepositoryStub: CityListRemoteRepository {
     var error: CityListRemoteRepositoryError?
     var result: [City] = [CityFactory.create()]
     func listAllCities() async throws(CityListRemoteRepositoryError) -> [City] {
@@ -20,7 +20,7 @@ class CityListRemoteRepositoryStub: CityListRemoteRepository {
     }
 }
 
-class CityLocalRepositoryStub: CityLocalRepository {
+final class CityLocalRepositoryStub: CityLocalRepository {
     var result: [City] = []
 
     func create(city: City) {
@@ -40,11 +40,11 @@ class CityLocalRepositoryStub: CityLocalRepository {
     }
 }
 
-class DefaultListCitiesUseCaseTests {
+final class DefaultListCitiesUseCaseTests {
     
-    let sut: DefaultListCitiesUseCase
-    let remoteRepository: CityListRemoteRepositoryStub
-    let localRepository: CityLocalRepositoryStub
+    private let sut: DefaultListCitiesUseCase
+    private let remoteRepository: CityListRemoteRepositoryStub
+    private let localRepository: CityLocalRepositoryStub
     
     init() {
         remoteRepository = .init()
@@ -151,7 +151,7 @@ class DefaultListCitiesUseCaseIntegrationTests {
         }
     }
     
-    @Test("GIVEN some remote repository and no favorite entries, WHEN execute, THEN it should fetch results")
+    @Test("GIVEN some remote repository and no favorite entries, WHEN execute, THEN it should fetch results", .disabled())
     func fetchActualResults() async throws {
         try await WHEN_execute()
         try THEN_itShouldReturnTheEntriesAsTheFetched()

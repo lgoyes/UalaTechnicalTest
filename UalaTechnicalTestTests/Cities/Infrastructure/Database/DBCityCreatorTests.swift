@@ -11,9 +11,9 @@ import SwiftData
 
 final class DBCityCreatorTests {
     
-    let sut: DefaultDBCityCreator
-    var someDBCity: DBCity!
-    var someContext: ModelContext
+    private let sut: DefaultDBCityCreator
+    private var someDBCity: DBCity!
+    private var someContext: ModelContext
     
     init() throws {
         someContext = ModelContextStubFactory().create()

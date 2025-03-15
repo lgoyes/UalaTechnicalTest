@@ -18,8 +18,8 @@ final class PlistReaderStub: PlistReaderProtocol {
 
 struct SettingsRetrieverUnitTests {
 
-    let readerStub: PlistReaderStub
-    let sut: SettingsRetriever
+    private let readerStub: PlistReaderStub
+    private let sut: SettingsRetriever
     
     init() {
         self.readerStub = PlistReaderStub()
@@ -47,7 +47,7 @@ struct SettingsRetrieverUnitTests {
 }
 
 struct SettingsRetrieverIntegrationTests {
-    let sut = SettingsRetrieverFactory().create()
+    private let sut = SettingsRetrieverFactory().create()
     
     @Test("GIVEN Settings file exists in main bundle WHEN retrieve THEN it should return the settings")
     func loadContent() {

@@ -8,7 +8,7 @@
 import Testing
 @testable import UalaTechnicalTest
 
-class APIClientStub: RESTAPIFetchable {
+final class APIClientStub: RESTAPIFetchable {
     var response: Decodable!
     var error: RESTAPIFetchableError?
     
@@ -20,13 +20,13 @@ class APIClientStub: RESTAPIFetchable {
     }
 }
 
-class DefaultCityListRemoteRepositoryTests {
+final class DefaultCityListRemoteRepositoryTests {
     
-    var sut: DefaultCityListRemoteRepository!
-    let clientStub: APIClientStub
-    let cityMapper: APICityMapper
-    var result: [City]!
-    var delayed_listAllCities_closure: (() async throws -> Void)!
+    private var sut: DefaultCityListRemoteRepository!
+    private let clientStub: APIClientStub
+    private let cityMapper: APICityMapper
+    private var result: [City]!
+    private var delayed_listAllCities_closure: (() async throws -> Void)!
     
     init() {
         clientStub = APIClientStub()

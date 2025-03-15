@@ -8,7 +8,7 @@
 import Testing
 @testable import UalaTechnicalTest
 
-class DefaultLoggerTests {
+final class DefaultLoggerTests {
     
     private var printedMessages: [String] = []
     private var sut = DefaultLogger()

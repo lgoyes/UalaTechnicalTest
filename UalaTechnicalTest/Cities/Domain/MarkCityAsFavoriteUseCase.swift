@@ -16,12 +16,12 @@ protocol MarkCityAsFavoriteUseCase: Command where ErrorType == MarkCityAsFavorit
 class DefaultMarkCityAsFavoriteUseCase: MarkCityAsFavoriteUseCase {
     typealias LocalRepository = CityListLocalRepository & CityCreateLocalRepository
     
-    private var entries: [City]
+    private var favoriteEntries: [City]
     private var newFavorite: City!
     private var localRepository: LocalRepository
     
     init(localRepository: LocalRepository) {
-        self.entries = []
+        self.favoriteEntries = []
         self.localRepository = localRepository
     }
     
@@ -31,7 +31,7 @@ class DefaultMarkCityAsFavoriteUseCase: MarkCityAsFavoriteUseCase {
     
     func execute() async throws(MarkCityAsFavoriteUseCaseError) {
         try validateNewFavoriteSet()
-        try fetchEntriesFromDisk()
+        try fetchFavoriteEntriesFromDisk()
         if !isNewFavoriteAlreadyInList() {
             saveNewFavorite()
         }
@@ -42,15 +42,15 @@ class DefaultMarkCityAsFavoriteUseCase: MarkCityAsFavoriteUseCase {
             throw .newFavoriteNotSet
         }
     }
-    private func fetchEntriesFromDisk() throws(MarkCityAsFavoriteUseCaseError) {
+    private func fetchFavoriteEntriesFromDisk() throws(MarkCityAsFavoriteUseCaseError) {
         do {
-            entries = try localRepository.listAllCities()
+            favoriteEntries = try localRepository.listAllCities()
         } catch {
             throw MarkCityAsFavoriteUseCaseError.errorReadingDB
         }
     }
     private func isNewFavoriteAlreadyInList() -> Bool {
-        return entries.contains(where: { $0.id == newFavorite.id })
+        return favoriteEntries.contains(where: { $0.id == newFavorite.id })
     }
     private func saveNewFavorite() {
         localRepository.create(city: newFavorite)

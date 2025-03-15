@@ -32,11 +32,11 @@ struct CoordinateFactory {
     }
 }
 
-class APICoordinateMapperTests {
+final class APICoordinateMapperTests {
     
-    let sut = APICoordinateMapper()
-    var apiCoordinate: APICoordinate!
-    var result: Coordinate!
+    private let sut = APICoordinateMapper()
+    private var apiCoordinate: APICoordinate!
+    private var result: Coordinate!
 
     @Test("GIVEN some APICoordinate, WHEN map, THEN return a valid Coordinate")
     func map() {

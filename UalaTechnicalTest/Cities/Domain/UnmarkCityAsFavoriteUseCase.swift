@@ -6,7 +6,7 @@
 //
 
 enum UnmarkCityAsFavoriteUseCaseError: Swift.Error {
-    case favoriteToRemoveNotSet, errorReadingDB, favoriteNotFound
+    case favoriteToRemoveNotSet, favoriteNotFound
 }
 
 protocol UnmarkCityAsFavoriteUseCase: Command where ErrorType == UnmarkCityAsFavoriteUseCaseError {
@@ -16,12 +16,12 @@ protocol UnmarkCityAsFavoriteUseCase: Command where ErrorType == UnmarkCityAsFav
 class DefaultUnmarkCityAsFavoriteUseCase: UnmarkCityAsFavoriteUseCase {
     typealias LocalRepository = CityListLocalRepository & CityRemoveLocalRepository
     
-    private var entries: [City]
+    private var favoriteEntries: [City]
     private var favoriteToRemove: City!
     private var localRepository: LocalRepository
     
     init(localRepository: LocalRepository) {
-        self.entries = []
+        self.favoriteEntries = []
         self.localRepository = localRepository
     }
     
@@ -31,10 +31,7 @@ class DefaultUnmarkCityAsFavoriteUseCase: UnmarkCityAsFavoriteUseCase {
     
     func execute() async throws(UnmarkCityAsFavoriteUseCaseError) {
         try validateNewFavoriteSet()
-        try fetchEntriesFromDisk()
-        if isFavoriteToRemoveAlreadyInList() {
-            try removeFavorite()
-        }
+        try tryToRemoveFavorite()
     }
     
     private func validateNewFavoriteSet() throws(UnmarkCityAsFavoriteUseCaseError) {
@@ -42,17 +39,7 @@ class DefaultUnmarkCityAsFavoriteUseCase: UnmarkCityAsFavoriteUseCase {
             throw .favoriteToRemoveNotSet
         }
     }
-    private func fetchEntriesFromDisk() throws(UnmarkCityAsFavoriteUseCaseError) {
-        do {
-            entries = try localRepository.listAllCities()
-        } catch {
-            throw UnmarkCityAsFavoriteUseCaseError.errorReadingDB
-        }
-    }
-    private func isFavoriteToRemoveAlreadyInList() -> Bool {
-        return entries.contains(where: { $0.id == favoriteToRemove.id })
-    }
-    private func removeFavorite() throws(UnmarkCityAsFavoriteUseCaseError) {
+    private func tryToRemoveFavorite() throws(UnmarkCityAsFavoriteUseCaseError) {
         do {
             try localRepository.remove(city: favoriteToRemove)
         } catch {

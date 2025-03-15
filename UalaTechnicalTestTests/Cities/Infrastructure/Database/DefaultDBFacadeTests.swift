@@ -9,21 +9,21 @@ import Testing
 import SwiftData
 @testable import UalaTechnicalTest
 
-class DBCityCreatableStub: DBCityCreatable {
+final class DBCityCreatableStub: DBCityCreatable {
     var createCalled = false
     func create(city: DBCity) {
         createCalled = true
     }
 }
 
-class DBCityRemovableStub: DBCityRemovable {
+final class DBCityRemovableStub: DBCityRemovable {
     var removeCalled = false
     func remove(city: DBCity) {
         removeCalled = true
     }
 }
 
-class DBCityListableStub: DBCityListable {
+final class DBCityListableStub: DBCityListable {
     var listCalled = false
     func listAllCities() throws(DBCityListableError) -> [DBCity] {
         listCalled = true
@@ -33,11 +33,11 @@ class DBCityListableStub: DBCityListable {
 
 final class DefaultDBCityFacadeTests {
     
-    let sut: DefaultDBFacade
-    var someDBCity: DBCity!
-    let creator: DBCityCreatableStub
-    let lister: DBCityListableStub
-    let remover: DBCityRemovableStub
+    private let sut: DefaultDBFacade
+    private var someDBCity: DBCity!
+    private let creator: DBCityCreatableStub
+    private let lister: DBCityListableStub
+    private let remover: DBCityRemovableStub
     
     init() throws {
         creator = DBCityCreatableStub()

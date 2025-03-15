@@ -1,21 +1,21 @@
 //
-//  ListCitiesUseCaseFactoryTests.swift
+//  MarkCityAsFavoriteUseCaseFactoryTests.swift
 //  UalaTechnicalTest
 //
-//  Created by Luis David Goyes Garces on 12/3/25.
+//  Created by Luis David Goyes Garces on 15/3/25.
 //
 
 import Testing
 @testable import UalaTechnicalTest
 
-final class ListCitiesUseCaseFactoryTests {
-    
-    private let sut : ListCitiesUseCaseFactory
-    private var result: (any UseCase)!
+final class MarkCityAsFavoriteUseCaseFactoryTests {
+
+    private let sut : MarkCityAsFavoriteUseCaseFactory
+    private var result: (any MarkCityAsFavoriteUseCase)!
     
     init() {
         let context = ModelContextStubFactory().create()
-        sut = ListCitiesUseCaseFactory(context: context)
+        sut = MarkCityAsFavoriteUseCaseFactory(context: context)
     }
 
     @Test("WHEN create, THEN it should create some valid use case")
@@ -29,6 +29,6 @@ final class ListCitiesUseCaseFactoryTests {
     }
     
     func THEN_itShouldCreateSomeValidUseCase() {
-        #expect(result is DefaultListCitiesUseCase)
+        #expect(result is DefaultMarkCityAsFavoriteUseCase)
     }
 }

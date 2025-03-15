@@ -11,9 +11,9 @@ import SwiftData
 
 final class DefaultDBCityRemoverTests {
     
-    let sut: DefaultDBCityRemover
-    var someDBCity: DBCity!
-    var someContext: ModelContext
+    private let sut: DefaultDBCityRemover
+    private var someDBCity: DBCity!
+    private var someContext: ModelContext
     
     init() throws {
         someContext = ModelContextStubFactory().create()

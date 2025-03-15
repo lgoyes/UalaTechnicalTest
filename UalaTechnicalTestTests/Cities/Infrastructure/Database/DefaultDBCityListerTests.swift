@@ -11,10 +11,10 @@ import SwiftData
 
 final class DefaultDBCityListerTests {
     
-    let sut: DefaultDBCityLister
-    var someDBCity: DBCity!
-    var someContext: ModelContext
-    var result: [DBCity]!
+    private let sut: DefaultDBCityLister
+    private var someDBCity: DBCity!
+    private var someContext: ModelContext
+    private var result: [DBCity]!
     
     init() throws {
         someContext = ModelContextStubFactory().create()
