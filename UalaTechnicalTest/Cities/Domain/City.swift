@@ -14,6 +14,6 @@ struct City {
     let country: String
     let name: String
     let id: Int
-    let favorite: Bool
+    var favorite: Bool
     let coordinates: Coordinate
 }

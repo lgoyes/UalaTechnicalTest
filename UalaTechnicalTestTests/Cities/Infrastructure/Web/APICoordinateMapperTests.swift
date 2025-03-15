@@ -23,8 +23,8 @@ extension Coordinate: @retroactive Equatable {
 }
 
 struct CoordinateFactory {
-    static func createSomeCoordinates() -> Coordinate {
-        Coordinate(latitude: CityConstant.someLatitude, longitude: CityConstant.someLongitude)
+    static func createSomeCoordinates(latitude: Double? = nil, longitude: Double? = nil) -> Coordinate {
+        Coordinate(latitude: latitude ?? CityConstant.someLatitude, longitude: longitude ?? CityConstant.someLongitude)
     }
     
     static func createSomeAPICoordinates() -> APICoordinate {

@@ -8,7 +8,7 @@
 @testable import UalaTechnicalTest
 
 struct CityFactory {
-    static func create() -> City {
-        City(country: CityConstant.someCountry, name: CityConstant.someName, id: CityConstant.someId, favorite: CityConstant.favorite, coordinates: CoordinateFactory.createSomeCoordinates())
+    static func create(country: String? = nil, name: String? = nil, id: Int? = nil, favorite: Bool? = nil, latitude: Double? = nil, longitude: Double? = nil) -> City {
+        City(country: country ?? CityConstant.someCountry, name: name ?? CityConstant.someName, id: id ?? CityConstant.someId, favorite: favorite ?? CityConstant.favorite, coordinates: CoordinateFactory.createSomeCoordinates(latitude: latitude, longitude: longitude))
     }
 }

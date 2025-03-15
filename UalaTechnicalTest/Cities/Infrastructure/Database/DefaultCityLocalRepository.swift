@@ -5,6 +5,8 @@
 //  Created by Luis David Goyes Garces on 14/3/25.
 //
 
+typealias CityLocalRepository = CityCreateLocalRepository & CityListLocalRepository & CityUpdateLocalRepository & CityRemoveLocalRepository
+
 class DefaultCityLocalRepository {
     private enum Error: Swift.Error {
         case cityNotFoundInDB, couldNotListEntries

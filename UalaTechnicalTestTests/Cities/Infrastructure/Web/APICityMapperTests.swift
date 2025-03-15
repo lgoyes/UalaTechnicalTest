@@ -22,7 +22,8 @@ extension City: @retroactive Equatable {
         lhs.country == rhs.country &&
         lhs.name == rhs.name &&
         lhs.id == rhs.id &&
-        lhs.coordinates == rhs.coordinates
+        lhs.coordinates == rhs.coordinates &&
+        lhs.favorite == rhs.favorite
     }
 }
 

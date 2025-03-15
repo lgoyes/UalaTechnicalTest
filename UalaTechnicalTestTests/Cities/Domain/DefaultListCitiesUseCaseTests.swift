@@ -6,6 +6,7 @@
 //
 
 import Testing
+import SwiftData
 @testable import UalaTechnicalTest
 
 class CityListRemoteRepositoryStub: CityListRemoteRepository {
@@ -19,25 +20,101 @@ class CityListRemoteRepositoryStub: CityListRemoteRepository {
     }
 }
 
+class CityLocalRepositoryStub: CityLocalRepository {
+    var result: [City] = []
+
+    func create(city: City) {
+        
+    }
+    
+    func listAllCities() throws(CityListLocalRepositoryError) -> [City] {
+        result
+    }
+    
+    func remove(city: City) throws(CityRemoveLocalRepositoryError) {
+        
+    }
+    
+    func update(city: City) throws(CityUpdateLocalRepositoryError) {
+        
+    }
+}
+
 class DefaultListCitiesUseCaseTests {
     
     let sut: DefaultListCitiesUseCase
-    let repository: CityListRemoteRepositoryStub
+    let remoteRepository: CityListRemoteRepositoryStub
+    let localRepository: CityLocalRepositoryStub
+    
     init() {
-        repository = .init()
-        sut = DefaultListCitiesUseCase(repository: repository)
+        remoteRepository = .init()
+        localRepository = .init()
+        sut = DefaultListCitiesUseCase(remoteRepository: remoteRepository, localRepository: localRepository)
     }
     
-    @Test("GIVEN some successful result from repository, WHEN execute, THEN it should return whatever the repository brought back")
-    func fetchCorrectResults() async throws {
-        try await sut.execute()
+    @Test("GIVEN some unordered entries, WHEN execute, THEN it should return them sorted alphabetically")
+    func displayInAlphabeticalOrder() async throws {
+        GIVEN_someUnorderedEntries()
+        try await WHEN_execute()
+        try THEN_itShouldReturnEntriesSorted()
+    }
+    
+    func GIVEN_someUnorderedEntries() {
+        let bogota = CityFactory.create(name: "Bogota", id: 1)
+        let medellin = CityFactory.create(name: "Medellin", id: 2)
+        let cali = CityFactory.create(name: "Cali", id: 3)
+        let armenia = CityFactory.create(name: "Armenia", id: 4)
+        
+        remoteRepository.result = [ bogota, medellin, cali, armenia ]
+    }
+    
+    func THEN_itShouldReturnEntriesSorted() throws {
         let result = try sut.getResult()
-        #expect(result == [CityFactory.create()])
+        #expect(remoteRepository.result.sorted(by: { $0.name < $1.name }) == result)
     }
     
-    @Test("GIVEN some error from the repository, WHEN execute, THEN it should throw an error")
+    @Test("GIVEN some successful result from the remote repository and no favorite entries, WHEN execute, THEN it should return whatever the remote repository brought back")
+    func fetchCorrectResults() async throws {
+        GIVEN_noFavoriteEntries()
+        try await WHEN_execute()
+        try THEN_itShouldReturnWhateverTheRemoteRepositoryBroughtBack()
+    }
+    
+    func GIVEN_noFavoriteEntries() {
+        localRepository.result = []
+    }
+    
+    func WHEN_execute() async throws {
+        try await sut.execute()
+    }
+    
+    func THEN_itShouldReturnWhateverTheRemoteRepositoryBroughtBack() throws {
+        let result = try sut.getResult()
+        #expect(result == remoteRepository.result)
+    }
+    
+    @Test("GIVEN some successful result from the remote repository and some favorite entries, WHEN execute, THEN it should modify the remote entries, merging the favorites from the local repository")
+    func markFavorites() async throws {
+        GIVEN_someFavoriteEntries()
+        try await WHEN_execute()
+        try THEN_itShouldModifyTheRemoteEntriesMergingTheLocalFavorites()
+    }
+    
+    func GIVEN_someFavoriteEntries() {
+        var city = CityFactory.create()
+        city.favorite = true
+        localRepository.result = [city]
+    }
+    
+    func THEN_itShouldModifyTheRemoteEntriesMergingTheLocalFavorites() throws {
+        let result = try sut.getResult()
+        #expect(result != remoteRepository.result)
+        #expect(result[0] == localRepository.result[0])
+    }
+    
+    @Test("GIVEN some error from the remote repository, WHEN execute, THEN it should throw an error")
     func errorFetchingResults() async {
-        repository.error = .networkError
+        remoteRepository.error = .networkError
         await #expect(throws: ListCitiesUseCaseError.networkError) {
             try await sut.execute()
         }
@@ -46,14 +123,16 @@ class DefaultListCitiesUseCaseTests {
 
 class DefaultListCitiesUseCaseIntegrationTests {
     
+    let context: ModelContext
     let sut: DefaultListCitiesUseCase
     let logger: DefaultLogger
     var logMessages: [String]
     
     init() {
+        context = ModelContextStubFactory().create()
         logger = DefaultLogger()
         logMessages = []
-        sut = ListCitiesUseCaseFactory(logger: self.logger).create() as! DefaultListCitiesUseCase
+        sut = ListCitiesUseCaseFactory(context: context, logger: self.logger).create() as! DefaultListCitiesUseCase
     }
     
     // I had an error while testing this feature. I leave this test just to show my way of approaching the problem and how did I found what the error was.
@@ -72,10 +151,18 @@ class DefaultListCitiesUseCaseIntegrationTests {
         }
     }
     
-    @Test("GIVEN some repository, WHEN execute, THEN it should fetch results")
-    func fetchResults() async throws {
+    @Test("GIVEN some remote repository and no favorite entries, WHEN execute, THEN it should fetch results")
+    func fetchActualResults() async throws {
+        try await WHEN_execute()
+        try THEN_itShouldReturnTheEntriesAsTheFetched()
+    }
+    
+    func WHEN_execute() async throws {
         try await sut.execute()
+    }
+    
+    func THEN_itShouldReturnTheEntriesAsTheFetched() throws {
         let result = try sut.getResult()
-        #expect(result.count > 0)
+        #expect(result.count == 209557)
     }
 }

@@ -25,7 +25,7 @@ class DBCityRemovableStub: DBCityRemovable {
 
 class DBCityListableStub: DBCityListable {
     var listCalled = false
-    func listAllCities() throws(UalaTechnicalTest.DBCityListableError) -> [UalaTechnicalTest.DBCity] {
+    func listAllCities() throws(DBCityListableError) -> [DBCity] {
         listCalled = true
         return []
     }

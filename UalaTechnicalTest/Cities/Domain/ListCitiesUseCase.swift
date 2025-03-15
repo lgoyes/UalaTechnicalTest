@@ -15,22 +15,18 @@ protocol ListCitiesUseCase: UseCase where Output == [City], ErrorType == ListCit
 
 class DefaultListCitiesUseCase: ListCitiesUseCase {
     private var result: [City]
+    private var remoteEntries: [City]
+    private var favoriteEntries: [City]
     private var error: ListCitiesUseCaseError?
-    private var repository: CityListRemoteRepository
+    private var remoteRepository: CityListRemoteRepository
+    private var localRepository: CityListLocalRepository
     
-    init(repository: CityListRemoteRepository) {
+    init(remoteRepository: CityListRemoteRepository, localRepository: CityListLocalRepository) {
         self.result = []
-        self.repository = repository
-    }
-    
-    func execute() async throws(ListCitiesUseCaseError) {
-        do {
-            error = nil
-            result = try await repository.listAllCities()
-        } catch {
-            self.error = ListCitiesUseCaseError.networkError
-            throw self.error!
-        }
+        self.remoteEntries = []
+        self.remoteRepository = remoteRepository
+        self.favoriteEntries = []
+        self.localRepository = localRepository
     }
     
     func getResult() throws(ListCitiesUseCaseError) -> [City] {
@@ -38,5 +34,49 @@ class DefaultListCitiesUseCase: ListCitiesUseCase {
             throw error
         }
         return result
+    }
+    
+    func execute() async throws(ListCitiesUseCaseError) {
+        do {
+            clearError()
+            try fetchEntriesFromDisk()
+            try await downloadEntries()
+            mergeEntries()
+            sortEntries()
+        } catch {
+            self.error = ListCitiesUseCaseError.networkError
+            throw self.error!
+        }
+    }
+    
+    private func clearError() {
+        error = nil
+    }
+    private func fetchEntriesFromDisk() throws {
+        favoriteEntries = try localRepository.listAllCities()
+    }
+    private func downloadEntries() async throws {
+        remoteEntries = try await remoteRepository.listAllCities()
+    }
+    
+    private func mergeEntries() {
+        initResultWithRemoteEntries()
+        markFavoriteEntriesInResult()
+    }
+    private func initResultWithRemoteEntries() {
+        result = remoteEntries
+    }
+    private func markFavoriteEntriesInResult() {
+        for entryIndex in result.indices {
+            if favoriteEntries.count == 0 { break }
+            let entryUnderTest = result[entryIndex]
+            if let associatedLocalEntryIndex = favoriteEntries.firstIndex(where: { $0.id == entryUnderTest.id }) {
+                let associatedLocalEntry = favoriteEntries.remove(at: associatedLocalEntryIndex)
+                result[entryIndex].favorite = associatedLocalEntry.favorite
+            }
+        }
+    }
+    private func sortEntries() {
+        result.sort(by: { $0.name < $1.name })
     }
 }

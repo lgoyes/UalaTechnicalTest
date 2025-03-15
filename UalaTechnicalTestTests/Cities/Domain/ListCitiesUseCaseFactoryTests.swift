@@ -10,8 +10,13 @@ import Testing
 
 class ListCitiesUseCaseFactoryTests {
     
-    let sut = ListCitiesUseCaseFactory()
+    let sut : ListCitiesUseCaseFactory
     var result: (any UseCase)!
+    
+    init() {
+        let context = ModelContextStubFactory().create()
+        sut = ListCitiesUseCaseFactory(context: context)
+    }
 
     @Test("WHEN create, THEN it should create some valid use case")
     func map() {

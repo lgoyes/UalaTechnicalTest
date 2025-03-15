@@ -16,8 +16,7 @@ final class DefaultDBCityRemoverTests {
     var someContext: ModelContext
     
     init() throws {
-        let container = try ModelContainerFactory().create(storedInMemory: false)
-        someContext = ModelContext(container)
+        someContext = ModelContextStubFactory().create()
         sut = DefaultDBCityRemover(context: someContext)
     }
     

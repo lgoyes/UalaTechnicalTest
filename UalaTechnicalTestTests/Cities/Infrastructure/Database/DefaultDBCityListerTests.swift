@@ -17,8 +17,7 @@ final class DefaultDBCityListerTests {
     var result: [DBCity]!
     
     init() throws {
-        let container = try ModelContainerFactory().create(storedInMemory: false)
-        someContext = ModelContext(container)
+        someContext = ModelContextStubFactory().create()
         sut = DefaultDBCityLister(context: someContext)
     }
     
