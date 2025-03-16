@@ -31,7 +31,7 @@ class DefaultUnmarkCityAsFavoriteUseCase: UnmarkCityAsFavoriteUseCase {
     
     func execute() async throws(UnmarkCityAsFavoriteUseCaseError) {
         try validateNewFavoriteSet()
-        try tryToRemoveFavorite()
+        try await tryToRemoveFavorite()
     }
     
     private func validateNewFavoriteSet() throws(UnmarkCityAsFavoriteUseCaseError) {
@@ -39,9 +39,9 @@ class DefaultUnmarkCityAsFavoriteUseCase: UnmarkCityAsFavoriteUseCase {
             throw .favoriteToRemoveNotSet
         }
     }
-    private func tryToRemoveFavorite() throws(UnmarkCityAsFavoriteUseCaseError) {
+    private func tryToRemoveFavorite() async throws(UnmarkCityAsFavoriteUseCaseError) {
         do {
-            try localRepository.remove(city: favoriteToRemove)
+            try await localRepository.remove(city: favoriteToRemove)
         } catch {
             throw UnmarkCityAsFavoriteUseCaseError.favoriteNotFound
         }

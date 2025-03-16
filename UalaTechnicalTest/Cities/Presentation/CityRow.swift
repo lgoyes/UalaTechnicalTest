@@ -13,6 +13,9 @@ struct CityRowView: View {
             static let favorite = "star.fill"
             static let notFavorite = "star"
         }
+        enum SelectedCell {
+            static let color = Color.blue.opacity(0.5)
+        }
     }
     let model: CityViewModel
     var onFavoriteTapped: (() -> Void)?
@@ -33,7 +36,7 @@ struct CityRowView: View {
         .onTapGesture {
             onSelected?()
         }
-        .background(model.selected ? .blue.opacity(0.5) : .clear)
+        .background(model.selected ? Constant.SelectedCell.color : .clear)
     }
     
     // Just for showing-off
@@ -52,7 +55,7 @@ struct CityRowView: View {
 }
 
 #Preview(traits: .sizeThatFitsLayout) {
-    @Previewable @State var viewModel = CityViewModel(id: 1, title: "Medellín, CO", subtitle: "Lat: 1, Lon: 2", favorite: true, selected: true)
+    @Previewable @State var viewModel = CityViewModel(associatedCity: City(country: "CO", name: "Medellín", id: 1, favorite: false, coordinates: Coordinate(latitude: 1, longitude: 2)), selected: false)
     CityRowView(model: viewModel, onFavoriteTapped: {
         viewModel.favorite.toggle()
     }, onSelected:  {

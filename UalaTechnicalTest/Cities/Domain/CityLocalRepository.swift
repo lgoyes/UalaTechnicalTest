@@ -5,6 +5,7 @@
 //  Created by Luis David Goyes Garces on 12/3/25.
 //
 
+@MainActor
 protocol CityCreateLocalRepository {
     func create(city: City)
 }
@@ -12,6 +13,7 @@ protocol CityCreateLocalRepository {
 enum CityRemoveLocalRepositoryError: Swift.Error {
     case cityNotFoundInDB
 }
+@MainActor
 protocol CityRemoveLocalRepository {
     func remove(city: City) throws(CityRemoveLocalRepositoryError)
 }
@@ -19,6 +21,7 @@ protocol CityRemoveLocalRepository {
 enum CityUpdateLocalRepositoryError: Swift.Error {
     case cityNotFoundInDB
 }
+@MainActor
 protocol CityUpdateLocalRepository {
     func update(city: City) throws(CityUpdateLocalRepositoryError)
 }
@@ -26,6 +29,7 @@ protocol CityUpdateLocalRepository {
 enum CityListLocalRepositoryError: Swift.Error {
     case couldNotListEntries
 }
+@MainActor
 protocol CityListLocalRepository {
     func listAllCities() throws(CityListLocalRepositoryError) -> [City]
 }

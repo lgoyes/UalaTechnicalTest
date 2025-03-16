@@ -6,12 +6,16 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct UalaTechnicalTestApp: App {
+    let modelContainer: ModelContainer = try! ModelContainerFactory().create(storedInMemory: false)
+    
     var body: some Scene {
         WindowGroup {
-            ContentFactory().create()
+            ContentView()
         }
+        .modelContainer(modelContainer)
     }
 }

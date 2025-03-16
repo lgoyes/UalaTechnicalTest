@@ -39,7 +39,7 @@ class DefaultListCitiesUseCase: ListCitiesUseCase {
     func execute() async throws(ListCitiesUseCaseError) {
         do {
             clearError()
-            try fetchEntriesFromDisk()
+            try await fetchEntriesFromDisk()
             try await downloadEntries()
             mergeEntries()
             sortEntries()
@@ -52,8 +52,8 @@ class DefaultListCitiesUseCase: ListCitiesUseCase {
     private func clearError() {
         error = nil
     }
-    private func fetchEntriesFromDisk() throws {
-        favoriteEntries = try localRepository.listAllCities()
+    private func fetchEntriesFromDisk() async throws {
+        favoriteEntries = try await localRepository.listAllCities()
     }
     private func downloadEntries() async throws {
         remoteEntries = try await remoteRepository.listAllCities()

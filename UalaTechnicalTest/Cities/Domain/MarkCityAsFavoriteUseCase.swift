@@ -31,9 +31,9 @@ class DefaultMarkCityAsFavoriteUseCase: MarkCityAsFavoriteUseCase {
     
     func execute() async throws(MarkCityAsFavoriteUseCaseError) {
         try validateNewFavoriteSet()
-        try fetchFavoriteEntriesFromDisk()
+        try await fetchFavoriteEntriesFromDisk()
         if !isNewFavoriteAlreadyInList() {
-            saveNewFavorite()
+            await saveNewFavorite()
         }
     }
     
@@ -42,9 +42,9 @@ class DefaultMarkCityAsFavoriteUseCase: MarkCityAsFavoriteUseCase {
             throw .newFavoriteNotSet
         }
     }
-    private func fetchFavoriteEntriesFromDisk() throws(MarkCityAsFavoriteUseCaseError) {
+    private func fetchFavoriteEntriesFromDisk() async throws(MarkCityAsFavoriteUseCaseError) {
         do {
-            favoriteEntries = try localRepository.listAllCities()
+            favoriteEntries = try await localRepository.listAllCities()
         } catch {
             throw MarkCityAsFavoriteUseCaseError.errorReadingDB
         }
@@ -52,7 +52,7 @@ class DefaultMarkCityAsFavoriteUseCase: MarkCityAsFavoriteUseCase {
     private func isNewFavoriteAlreadyInList() -> Bool {
         return favoriteEntries.contains(where: { $0.id == newFavorite.id })
     }
-    private func saveNewFavorite() {
-        localRepository.create(city: newFavorite)
+    private func saveNewFavorite() async {
+        await localRepository.create(city: newFavorite)
     }
 }
