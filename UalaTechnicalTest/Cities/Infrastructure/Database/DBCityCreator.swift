@@ -18,5 +18,6 @@ class DefaultDBCityCreator: DBCityCreatable {
     }
     func create(city: DBCity) {
         context.insert(city)
+        try! context.save()
     }
 }

@@ -50,9 +50,8 @@ class CityListFactory {
 
 #Preview {
     @Previewable @State var cities: [CityViewModel] = [
-        CityViewModel(associatedCity: City(country: "CO", name: "Medellín", id: 1, favorite: false, coordinates: Coordinate(latitude: 1, longitude: 2)), selected: false),
-        
-        CityViewModel(associatedCity: City(country: "CO", name: "Bogota", id: 2, favorite: false, coordinates: Coordinate(latitude: 3, longitude: 4)), selected: false),
+        CityViewModel(id: 1, title: "Medellín, CO", subtitle: "Lat: 1, Lon: 2", favorite: false, selected: false),
+        CityViewModel(id: 2, title: "Bogotá, CO", subtitle: "Lat: 2, Lon: 3", favorite: false, selected: false)
     ]
     @Previewable @State var selected: CityViewModel? = nil
 

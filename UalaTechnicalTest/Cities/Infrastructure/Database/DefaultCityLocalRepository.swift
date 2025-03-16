@@ -40,7 +40,7 @@ extension DefaultCityLocalRepository: CityCreateLocalRepository {
         db.create(city: dbCity)
     }
 }
-
+//3119841
 extension DefaultCityLocalRepository: CityListLocalRepository {
     func listAllCities() throws(CityListLocalRepositoryError) -> [City] {
         do {

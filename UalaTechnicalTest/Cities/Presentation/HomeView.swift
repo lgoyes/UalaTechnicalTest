@@ -11,7 +11,9 @@ import SwiftData
 class HomeFactory {
     func create(with context: ModelContext) -> HomeView {
         let listUseCase = ListCitiesUseCaseFactory(context: context).create()
-        let viewModel = HomeViewModel(listCitiesUseCase: listUseCase)
+        let markCityAsFavoriteUseCase = MarkCityAsFavoriteUseCaseFactory(context: context).create()
+        let unmarkCityAsFavoriteUseCase = UnmarkCityAsFavoriteUseCaseFactory(context: context).create()
+        let viewModel = HomeViewModel(listCitiesUseCase: listUseCase, markCityAsFavoriteUseCase: markCityAsFavoriteUseCase, unmarkCityAsFavoriteUseCase: unmarkCityAsFavoriteUseCase)
         return .init(viewModel: viewModel)
     }
 }
@@ -22,25 +24,28 @@ class HomeViewModel: ObservableObject {
     @Published var selectedCity: CityViewModel?
     
     private let listCitiesUseCase: any ListCitiesUseCase
+    private let markCityAsFavoriteUseCase: any MarkCityAsFavoriteUseCase
+    private let unmarkCityAsFavoriteUseCase: any UnmarkCityAsFavoriteUseCase
+    
     private var rawCities: [City] = [] {
         didSet {
             cities = rawCities.map({
-                CityViewModelFactory().create(city: $0)
+                CityViewModelFactory().create(city: $0, selectedCityId: selectedCity?.id)
             })
         }
     }
     
-    init(listCitiesUseCase: any ListCitiesUseCase) {
+    init(listCitiesUseCase: any ListCitiesUseCase, markCityAsFavoriteUseCase: any MarkCityAsFavoriteUseCase, unmarkCityAsFavoriteUseCase: any UnmarkCityAsFavoriteUseCase) {
         self.listCitiesUseCase = listCitiesUseCase
+        self.markCityAsFavoriteUseCase = markCityAsFavoriteUseCase
+        self.unmarkCityAsFavoriteUseCase = unmarkCityAsFavoriteUseCase
     }
     
     func processOnAppear() {
         guard !loading else { return }
         startLoading()
-        print("Downloading")
         Task {
             await downloadData()
-            print("Downloaded")
             await stopLoading()
         }
     }
@@ -68,11 +73,9 @@ class HomeViewModel: ObservableObject {
     
     func select(city: CityViewModel) {
         if let previousSelectedCity = selectedCity, let previousSelectedIndex = cities.firstIndex(where: { $0.id == previousSelectedCity.id }) {
-            print("Unselecting")
             cities[previousSelectedIndex].selected = false
         }
         if let currentSelectedIndex = cities.firstIndex(where: { $0.id == city.id }) {
-            print("Selecting")
             cities[currentSelectedIndex].selected = true
             selectedCity = city
         }
@@ -80,6 +83,30 @@ class HomeViewModel: ObservableObject {
     
     func favoriteTapped(city: CityViewModel) {
         print("\(city.favorite ? "Unmarking" : "Marking") \(city.title) as favorite...")
+        if let index = rawCities.firstIndex(where: { $0.id == city.id } ) {
+            let cityUnderInspection = rawCities[index]
+            if cityUnderInspection.favorite {
+                unmarkCityAsFavoriteUseCase.set(favoriteToRemove: cityUnderInspection)
+                Task {
+                    do {
+                        try await unmarkCityAsFavoriteUseCase.execute()
+                        cityUnderInspection.favorite = false
+                    } catch {
+                        print("Error: \(error.localizedDescription)")
+                    }
+                }
+            } else {
+                markCityAsFavoriteUseCase.set(newFavorite: cityUnderInspection)
+                Task {
+                    do {
+                        try await markCityAsFavoriteUseCase.execute()
+                        cityUnderInspection.favorite = true
+                    } catch {
+                        print("Error: \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
         if let index = cities.firstIndex(where: { $0.id == city.id } ) {
             cities[index].favorite.toggle()
         }
@@ -96,14 +123,14 @@ struct HomeView: View {
             }) { selectedCity in
                 viewModel.select(city: selectedCity)
             }
+            .overlay {
+                if viewModel.loading {
+                    ProgressView()
+                }
+            }
             .onAppear() {
                 viewModel.processOnAppear()
             }
-//            .overlay {
-//                if viewModel.loading {
-//                    ProgressView()
-//                }
-//            }
     }
 }
 
@@ -116,17 +143,38 @@ class FakeListCitiesUseCase: ListCitiesUseCase {
         result
     }
 }
+class FakeMarkFavoriteUseCase: MarkCityAsFavoriteUseCase {
+    func set(newFavorite: City) {
+        
+    }
+    
+    func execute() async throws(MarkCityAsFavoriteUseCaseError) {
+        
+    }
+}
+class FakeUnmarkFavoriteUseCase: UnmarkCityAsFavoriteUseCase {
+    func set(favoriteToRemove: City) {
+        
+    }
+    
+    func execute() async throws(UnmarkCityAsFavoriteUseCaseError) {
+        
+    }
+}
 #endif
 
 
 #Preview() {
     @Previewable @State var viewModel: HomeViewModel = {
-        let useCase = FakeListCitiesUseCase()
-        useCase.result = [
+        let downloadEntriesUseCase = FakeListCitiesUseCase()
+        downloadEntriesUseCase.result = [
             City(country: "CO", name: "Medellin", id: 1, favorite: true, coordinates: Coordinate(latitude: 6.25184, longitude: -75.56359)),
             City(country: "AR", name: "Buenos Aires", id: 2, favorite: false, coordinates: Coordinate(latitude: -34.603722, longitude: -58.381592))
         ]
-        let result = HomeViewModel(listCitiesUseCase: useCase)
+        let markFavoriteUseCase = FakeMarkFavoriteUseCase()
+        let unmarkFavoriteUseCase = FakeUnmarkFavoriteUseCase()
+        
+        let result = HomeViewModel(listCitiesUseCase: downloadEntriesUseCase, markCityAsFavoriteUseCase: markFavoriteUseCase, unmarkCityAsFavoriteUseCase: unmarkFavoriteUseCase)
         return result
     }()
     HomeView(viewModel: viewModel)
@@ -134,8 +182,11 @@ class FakeListCitiesUseCase: ListCitiesUseCase {
 
 #Preview() {
     let viewModel: HomeViewModel = {
-        let useCase = FakeListCitiesUseCase()
-        let result = HomeViewModel(listCitiesUseCase: useCase)
+        let downloadEntriesUseCase = FakeListCitiesUseCase()
+        let markFavoriteUseCase = FakeMarkFavoriteUseCase()
+        let unmarkFavoriteUseCase = FakeUnmarkFavoriteUseCase()
+        
+        let result = HomeViewModel(listCitiesUseCase: downloadEntriesUseCase, markCityAsFavoriteUseCase: markFavoriteUseCase, unmarkCityAsFavoriteUseCase: unmarkFavoriteUseCase)
         result.loading = true
         return result
     }()

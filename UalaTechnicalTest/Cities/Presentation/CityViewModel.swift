@@ -6,30 +6,17 @@
 //
 
 struct CityViewModel {
-    var id: Int { city.id }
-    var title: String { "\(city.name), \(city.country)" }
-    var subtitle: String { "Lat: \(city.coordinates.latitude), Lon: \(city.coordinates.longitude)" }
-    var favorite: Bool {
-        get {
-            city.favorite
-        }
-        set {
-            city.favorite = newValue
-        }
-    }
+    let id: Int
+    let title: String
+    let subtitle: String
+    var favorite: Bool
     var selected: Bool
-    private var city: City
-    init(associatedCity: City, selected: Bool) {
-        self.selected = selected
-        self.city = associatedCity
-    }
 }
 
 class CityViewModelFactory {
-    func create(city: City) -> CityViewModel {
-        return CityViewModel(
-            associatedCity: city,
-            selected: false
-        )
+    func create(city: City, selectedCityId: Int?) -> CityViewModel {
+        let title = "\(city.name), \(city.country)"
+        let subtitle = "Lat: \(city.coordinates.latitude), Lon: \(city.coordinates.longitude)"
+        return CityViewModel(id: city.id, title: title, subtitle: subtitle, favorite: city.favorite, selected: city.id == selectedCityId ?? -1)
     }
 }

@@ -55,7 +55,7 @@ struct CityRowView: View {
 }
 
 #Preview(traits: .sizeThatFitsLayout) {
-    @Previewable @State var viewModel = CityViewModel(associatedCity: City(country: "CO", name: "Medellín", id: 1, favorite: false, coordinates: Coordinate(latitude: 1, longitude: 2)), selected: false)
+    @Previewable @State var viewModel = CityViewModel(id: 1, title: "Medellín, CO", subtitle: "Lat: 1, Lon: 2", favorite: false, selected: false)
     CityRowView(model: viewModel, onFavoriteTapped: {
         viewModel.favorite.toggle()
     }, onSelected:  {

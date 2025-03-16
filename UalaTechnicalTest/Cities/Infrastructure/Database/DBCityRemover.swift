@@ -17,5 +17,6 @@ class DefaultDBCityRemover: DBCityRemovable {
     }
     func remove(city: DBCity) {
         context.delete(city)
+        try! context.save()
     }
 }
