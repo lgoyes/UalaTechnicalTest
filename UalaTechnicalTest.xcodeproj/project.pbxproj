@@ -18,11 +18,19 @@
 			remoteGlobalIDString = 7924E0B72D80DF630027A48A;
 			remoteInfo = UalaTechnicalTest;
 		};
+		795FB4282D88C94C00E32EC5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7924E0B02D80DF630027A48A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7924E0B72D80DF630027A48A;
+			remoteInfo = UalaTechnicalTest;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		7924E0B82D80DF630027A48A /* UalaTechnicalTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UalaTechnicalTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7924E0C82D80DF640027A48A /* UalaTechnicalTestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UalaTechnicalTestTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		795FB4222D88C94C00E32EC5 /* UalaTechnicalTestUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UalaTechnicalTestUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		79BA1ECD2D81D17000A8DC7F /* Mobile Challenge - v0.7.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Mobile Challenge - v0.7.pdf"; sourceTree = "<group>"; };
 		79C608792D80E9090089BE17 /* UalaTechnicalTest.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = UalaTechnicalTest.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -36,6 +44,11 @@
 		7924E0CB2D80DF640027A48A /* UalaTechnicalTestTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = UalaTechnicalTestTests;
+			sourceTree = "<group>";
+		};
+		795FB4232D88C94C00E32EC5 /* UalaTechnicalTestUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = UalaTechnicalTestUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -55,6 +68,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		795FB41F2D88C94C00E32EC5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -65,6 +85,7 @@
 				79C608792D80E9090089BE17 /* UalaTechnicalTest.xctestplan */,
 				7924E0BA2D80DF630027A48A /* UalaTechnicalTest */,
 				7924E0CB2D80DF640027A48A /* UalaTechnicalTestTests */,
+				795FB4232D88C94C00E32EC5 /* UalaTechnicalTestUITests */,
 				7924E0B92D80DF630027A48A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -74,6 +95,7 @@
 			children = (
 				7924E0B82D80DF630027A48A /* UalaTechnicalTest.app */,
 				7924E0C82D80DF640027A48A /* UalaTechnicalTestTests.xctest */,
+				795FB4222D88C94C00E32EC5 /* UalaTechnicalTestUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -126,6 +148,29 @@
 			productReference = 7924E0C82D80DF640027A48A /* UalaTechnicalTestTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		795FB4212D88C94C00E32EC5 /* UalaTechnicalTestUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 795FB42A2D88C94C00E32EC5 /* Build configuration list for PBXNativeTarget "UalaTechnicalTestUITests" */;
+			buildPhases = (
+				795FB41E2D88C94C00E32EC5 /* Sources */,
+				795FB41F2D88C94C00E32EC5 /* Frameworks */,
+				795FB4202D88C94C00E32EC5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				795FB4292D88C94C00E32EC5 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				795FB4232D88C94C00E32EC5 /* UalaTechnicalTestUITests */,
+			);
+			name = UalaTechnicalTestUITests;
+			packageProductDependencies = (
+			);
+			productName = UalaTechnicalTestUITests;
+			productReference = 795FB4222D88C94C00E32EC5 /* UalaTechnicalTestUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -140,6 +185,10 @@
 						CreatedOnToolsVersion = 16.2;
 					};
 					7924E0C72D80DF640027A48A = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 7924E0B72D80DF630027A48A;
+					};
+					795FB4212D88C94C00E32EC5 = {
 						CreatedOnToolsVersion = 16.2;
 						TestTargetID = 7924E0B72D80DF630027A48A;
 					};
@@ -161,6 +210,7 @@
 			targets = (
 				7924E0B72D80DF630027A48A /* UalaTechnicalTest */,
 				7924E0C72D80DF640027A48A /* UalaTechnicalTestTests */,
+				795FB4212D88C94C00E32EC5 /* UalaTechnicalTestUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -175,6 +225,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		7924E0C62D80DF640027A48A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		795FB4202D88C94C00E32EC5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -198,6 +255,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		795FB41E2D88C94C00E32EC5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -205,6 +269,11 @@
 			isa = PBXTargetDependency;
 			target = 7924E0B72D80DF630027A48A /* UalaTechnicalTest */;
 			targetProxy = 7924E0C92D80DF640027A48A /* PBXContainerItemProxy */;
+		};
+		795FB4292D88C94C00E32EC5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7924E0B72D80DF630027A48A /* UalaTechnicalTest */;
+			targetProxy = 795FB4282D88C94C00E32EC5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -440,6 +509,48 @@
 			};
 			name = Release;
 		};
+		795FB42B2D88C94C00E32EC5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8SNDXXC32G;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.goyes.UalaTechnicalTestUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = UalaTechnicalTest;
+			};
+			name = Debug;
+		};
+		795FB42C2D88C94C00E32EC5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8SNDXXC32G;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.goyes.UalaTechnicalTestUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = UalaTechnicalTest;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -466,6 +577,15 @@
 			buildConfigurations = (
 				7924E0E02D80DF640027A48A /* Debug */,
 				7924E0E12D80DF640027A48A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		795FB42A2D88C94C00E32EC5 /* Build configuration list for PBXNativeTarget "UalaTechnicalTestUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				795FB42B2D88C94C00E32EC5 /* Debug */,
+				795FB42C2D88C94C00E32EC5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

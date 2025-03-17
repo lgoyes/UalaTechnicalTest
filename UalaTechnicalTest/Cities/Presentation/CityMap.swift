@@ -31,6 +31,7 @@ struct CityMapView: View {
     
     var body: some View {
         Map(position: $cameraPosition)
+            .accessibilityIdentifier("city-map")
             .onChange(of: viewModel, { oldValue, newValue in
                 updateCameraPosition()
             })

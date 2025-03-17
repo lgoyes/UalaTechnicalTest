@@ -23,6 +23,13 @@
         "identifier" : "7924E0C72D80DF640027A48A",
         "name" : "UalaTechnicalTestTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:UalaTechnicalTest.xcodeproj",
+        "identifier" : "795FB4212D88C94C00E32EC5",
+        "name" : "UalaTechnicalTestUITests"
+      }
     }
   ],
   "version" : 1

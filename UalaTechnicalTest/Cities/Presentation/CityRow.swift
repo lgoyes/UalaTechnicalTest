@@ -27,6 +27,7 @@ struct CityRowView: View {
             }
             Spacer()
             favoriteIcon()
+                .accessibilityIdentifier("favorite-icon")
                 .onTapGesture {
                     onFavoriteTapped?()
                 }
