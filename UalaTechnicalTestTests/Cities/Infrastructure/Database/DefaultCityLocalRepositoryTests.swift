@@ -47,16 +47,16 @@ final class DefaultCityLocalRepositoryTests {
 
 // MARK: - Create
 extension DefaultCityLocalRepositoryTests {
-    @Test("GIVEN some city, WHEN create, THEN it should add city to DB")
+    @Test("GIVEN some city non existing in DB, WHEN create, THEN it should add city to DB")
     func create() async throws {
-        GIVEN_someValidCity()
+        GIVEN_someCityThatDoesNotExistInDB()
         try await WHEN_create()
         THEN_itShouldAddCityToDB()
     }
     
-    func GIVEN_someValidCity() {
-        city = CityFactory.create()
-        db.cities = [DBCityMapper().invert(city)]
+    func GIVEN_someCityThatDoesNotExistInDB() {
+        city = CityFactory.create(id: 1)
+        db.cities = [DBCityMapper().invert(CityFactory.create(id: 2))]
     }
     
     func WHEN_create() async throws {
@@ -70,12 +70,17 @@ extension DefaultCityLocalRepositoryTests {
 
 // MARK: - Remove
 extension DefaultCityLocalRepositoryTests {
-    @Test("GIVEN some valid city, WHEN remove, THEN it should remove entry from db and it should not throw any error")
+    @Test("GIVEN some city that exists in db, WHEN remove, THEN it should remove entry from db and it should not throw any error")
     func remove() async {
-        GIVEN_someValidCity()
+        GIVEN_someCityThatExistsInDB()
         WHEN_remove()
         await THEN_itShouldNotThrowAnyError()
         THEN_itShouldRemoveEntryFromDB()
+    }
+    
+    func GIVEN_someCityThatExistsInDB() {
+        city = CityFactory.create(id: 1)
+        db.cities = [DBCityMapper().invert(CityFactory.create(id: 1))]
     }
         
     func WHEN_remove() {
@@ -94,18 +99,12 @@ extension DefaultCityLocalRepositoryTests {
         #expect(db.removeCalled)
     }
     
-    @Test("GIVEN some invalid city, WHEN remove, THEN it should throw an error and should not invoke remove on db")
+    @Test("GIVEN some city that does not exist in db, WHEN remove, THEN it should throw an error and should not invoke remove on db")
     func failedRemove() async {
-        GIVEN_someInvalidCity()
+        GIVEN_someCityThatDoesNotExistInDB()
         WHEN_remove()
         await THEN_itShouldThrowACityNotFoundError()
         THEN_itShouldNotInvokeRemoveOnDB()
-    }
-    
-    func GIVEN_someInvalidCity() {
-        city = CityFactory.create()
-        let anotherCity = City(country: "", name: "", id: city.id + 1, favorite: false, coordinates: Coordinate(latitude: 0, longitude: 0))
-        db.cities = [DBCityMapper().invert(anotherCity)]
     }
     
     func THEN_itShouldNotInvokeRemoveOnDB() {
