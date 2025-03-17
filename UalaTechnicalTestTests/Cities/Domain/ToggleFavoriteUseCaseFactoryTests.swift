@@ -1,6 +1,6 @@
 //
-//  MarkCityAsFavoriteUseCaseFactoryTests.swift
-//  UalaTechnicalTest
+//  ToggleFavoriteUseCaseFactoryTests.swift
+//  UalaTechnicalTestTests
 //
 //  Created by Luis David Goyes Garces on 15/3/25.
 //
@@ -8,14 +8,14 @@
 import Testing
 @testable import UalaTechnicalTest
 
-final class MarkCityAsFavoriteUseCaseFactoryTests {
+final class ToggleFavoriteUseCaseFactoryTests {
 
-    private let sut : MarkCityAsFavoriteUseCaseFactory
-    private var result: (any MarkCityAsFavoriteUseCase)!
+    private let sut : ToggleFavoriteUseCaseFactory
+    private var result: (any ToggleFavoriteUseCase)!
     
     init() {
         let context = ModelContextStubFactory().create()
-        sut = MarkCityAsFavoriteUseCaseFactory(context: context)
+        sut = ToggleFavoriteUseCaseFactory(context: context)
     }
 
     @Test("WHEN create, THEN it should create some valid use case")
@@ -29,6 +29,6 @@ final class MarkCityAsFavoriteUseCaseFactoryTests {
     }
     
     func THEN_itShouldCreateSomeValidUseCase() {
-        #expect(result is DefaultMarkCityAsFavoriteUseCase)
+        #expect(result is DefaultToggleFavoriteUseCase)
     }
 }

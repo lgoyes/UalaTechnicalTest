@@ -11,7 +11,7 @@ enum ToggleFavoriteUseCaseError: Swift.Error {
     case missingRawCities, missingFavoriteCandidate, favoriteNotFound, favoriteAlreadyExists
 }
 protocol ToggleFavoriteUseCase: UseCase where ErrorType == ToggleFavoriteUseCaseError, Output == [City] {
-    func set(rawCities: inout [City])
+    func set(rawCities: [City])
     func set(favoriteCandidateId: Int)
 }
 
@@ -26,7 +26,7 @@ class DefaultToggleFavoriteUseCase: ToggleFavoriteUseCase {
         self.localRepository = localRepository
     }
     
-    func set(rawCities: inout [City]) {
+    func set(rawCities: [City]) {
         self.cities = rawCities
     }
     
@@ -42,7 +42,7 @@ class DefaultToggleFavoriteUseCase: ToggleFavoriteUseCase {
             throw .missingFavoriteCandidate
         }
         guard let updatedCityIndex = cities.firstIndex(where: { $0.id == favoriteCandidateId } ) else {
-            return
+            throw .favoriteNotFound
         }
         cityForUpdate = cities[updatedCityIndex]
         
@@ -52,7 +52,7 @@ class DefaultToggleFavoriteUseCase: ToggleFavoriteUseCase {
             try await tryToCreateNewFavorite()
         }
         
-        await toggleFavoriteInRawCities(updatedCityIndex: updatedCityIndex)
+        toggleFavoriteInRawCities(updatedCityIndex: updatedCityIndex)
     }
     
     private func tryToCreateNewFavorite() async throws(ToggleFavoriteUseCaseError) {
@@ -71,7 +71,6 @@ class DefaultToggleFavoriteUseCase: ToggleFavoriteUseCase {
         }
     }
     
-    @MainActor
     private func toggleFavoriteInRawCities(updatedCityIndex: Int) {
         cities[updatedCityIndex].favorite.toggle()
     }
@@ -82,5 +81,4 @@ class DefaultToggleFavoriteUseCase: ToggleFavoriteUseCase {
         }
         return cities
     }
-    
 }

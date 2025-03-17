@@ -16,12 +16,12 @@ protocol FilterCitiesUseCase: UseCase where Output == [CityViewModel], ErrorType
 }
 
 class DefaultFilterCitiesUseCase: FilterCitiesUseCase {
-    private var results: [CityViewModel]!
+    private var cities: [CityViewModel]!
     private var searchText: String = ""
     private var favoritesOnly: Bool = false
     
     func set(cities: [CityViewModel]) {
-        self.results = cities
+        self.cities = cities
     }
     func set(searchText: String) {
         self.searchText = searchText.lowercased()
@@ -31,11 +31,11 @@ class DefaultFilterCitiesUseCase: FilterCitiesUseCase {
     }
     
     func execute() async throws(FilterCitiesUseCaseError) {
-        guard results != nil else {
+        guard cities != nil else {
             throw .inputNotSet
         }
         
-        results = results.filter {
+        cities = cities.filter {
             if favoritesOnly && !$0.favorite {
                 return false
             } else if !searchText.isEmpty {
@@ -47,9 +47,9 @@ class DefaultFilterCitiesUseCase: FilterCitiesUseCase {
     }
     
     func getResult() throws(FilterCitiesUseCaseError) -> Array<CityViewModel> {
-        guard results != nil else {
+        guard cities != nil else {
             throw .inputNotSet
         }
-        return results
+        return cities
     }
 }

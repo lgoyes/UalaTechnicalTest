@@ -11,10 +11,12 @@ import SwiftData
 class HomeFactory {
     func create(with context: ModelContext) -> HomeView {
         let listUseCase = ListCitiesUseCaseFactory(context: context).create()
-        let markCityAsFavoriteUseCase = MarkCityAsFavoriteUseCaseFactory(context: context).create()
-        let unmarkCityAsFavoriteUseCase = UnmarkCityAsFavoriteUseCaseFactory(context: context).create()
         let filterCitiesUseCase = DefaultFilterCitiesUseCase()
-        let viewModel = HomeViewModel(listCitiesUseCase: listUseCase, markCityAsFavoriteUseCase: markCityAsFavoriteUseCase, unmarkCityAsFavoriteUseCase: unmarkCityAsFavoriteUseCase, filterCitiesUseCase: filterCitiesUseCase)
+        
+        let localRepository = CityListLocalRepositoryFactory().create(with: context)
+        let toggleFavoriteUseCase = DefaultToggleFavoriteUseCase(localRepository: localRepository)
+        
+        let viewModel = HomeViewModel(listCitiesUseCase: listUseCase, filterCitiesUseCase: filterCitiesUseCase, toggleFavoriteUseCase: toggleFavoriteUseCase)
         return .init(viewModel: viewModel)
     }
 }
@@ -66,9 +68,7 @@ struct HomeView: View {
                 HomeMadeNavigationSplitView(selected: $viewModel.selectedCity) { shouldNavigate in
                     CityListFactory()
                         .create(cities: viewModel.filteredCities, selectedCity: $viewModel.selectedCity, shouldNavigate: shouldNavigate, onFavoriteTapped: { city in
-                            Task {
-                                await viewModel.favoriteTapped(city: city)
-                            }
+                            viewModel.favoriteTapped(city: city)
                         })
                         .searchable(text: $viewModel.searchText, prompt: Constant.searchEntriesPrompt)
                         .toolbar {
@@ -97,13 +97,11 @@ class FakeListCitiesUseCase: ListCitiesUseCase {
         result
     }
 }
-class FakeMarkFavoriteUseCase: MarkCityAsFavoriteUseCase {
-    func set(newFavorite: City) {}
-    func execute() async throws(MarkCityAsFavoriteUseCaseError) {}
-}
-class FakeUnmarkFavoriteUseCase: UnmarkCityAsFavoriteUseCase {
-    func set(favoriteToRemove: City) {}
-    func execute() async throws(UnmarkCityAsFavoriteUseCaseError) {}
+class FakeToggleFavoriteUseCase: ToggleFavoriteUseCase {
+    func set(rawCities: [City]) { }
+    func set(favoriteCandidateId: Int) {}
+    func execute() async throws(ToggleFavoriteUseCaseError) {}
+    func getResult() throws(ToggleFavoriteUseCaseError) -> Array<City> { [] }
 }
 class FakeFilterCitiesUseCase: FilterCitiesUseCase {
     func set(cities: [CityViewModel]) {}
@@ -122,11 +120,10 @@ class FakeFilterCitiesUseCase: FilterCitiesUseCase {
             City(country: "CO", name: "Medellin", id: 1, favorite: true, coordinates: Coordinate(latitude: 6.25184, longitude: -75.56359)),
             City(country: "AR", name: "Buenos Aires", id: 2, favorite: false, coordinates: Coordinate(latitude: -34.603722, longitude: -58.381592))
         ]
-        let markFavoriteUseCase = FakeMarkFavoriteUseCase()
-        let unmarkFavoriteUseCase = FakeUnmarkFavoriteUseCase()
         let filterCitiesUseCase = FakeFilterCitiesUseCase()
+        let toggleFavoriteUseCase = FakeToggleFavoriteUseCase()
         
-        let result = HomeViewModel(listCitiesUseCase: downloadEntriesUseCase, markCityAsFavoriteUseCase: markFavoriteUseCase, unmarkCityAsFavoriteUseCase: unmarkFavoriteUseCase, filterCitiesUseCase: filterCitiesUseCase)
+        let result = HomeViewModel(listCitiesUseCase: downloadEntriesUseCase, filterCitiesUseCase: filterCitiesUseCase, toggleFavoriteUseCase: toggleFavoriteUseCase)
         return result
     }()
     HomeView(viewModel: viewModel)
@@ -135,11 +132,10 @@ class FakeFilterCitiesUseCase: FilterCitiesUseCase {
 #Preview("Landscape right", traits: .landscapeRight) {
     let viewModel: HomeViewModel = {
         let downloadEntriesUseCase = FakeListCitiesUseCase()
-        let markFavoriteUseCase = FakeMarkFavoriteUseCase()
-        let unmarkFavoriteUseCase = FakeUnmarkFavoriteUseCase()
         let filterCitiesUseCase = FakeFilterCitiesUseCase()
+        let toggleFavoriteUseCase = FakeToggleFavoriteUseCase()
         
-        let result = HomeViewModel(listCitiesUseCase: downloadEntriesUseCase, markCityAsFavoriteUseCase: markFavoriteUseCase, unmarkCityAsFavoriteUseCase: unmarkFavoriteUseCase, filterCitiesUseCase: filterCitiesUseCase)
+        let result = HomeViewModel(listCitiesUseCase: downloadEntriesUseCase, filterCitiesUseCase: filterCitiesUseCase, toggleFavoriteUseCase: toggleFavoriteUseCase)
         result.loading = true
         return result
     }()
