@@ -8,7 +8,7 @@
 import SwiftUI
 import MapKit
 
-struct CityMapViewModel {
+struct CityMapViewModel: Equatable {
     let latitude: Double
     let longitude: Double
     let name: String
@@ -31,14 +31,13 @@ struct CityMapView: View {
     
     var body: some View {
         Map(position: $cameraPosition)
-            .onChange(of: viewModel.latitude, { oldValue, newValue in
+            .onChange(of: viewModel, { oldValue, newValue in
                 updateCameraPosition()
             })
             .onAppear {
                 updateCameraPosition()
             }
             .navigationTitle(viewModel.name)
-        
     }
 }
 
@@ -49,7 +48,7 @@ class CityMapFactory {
     }
 }
 
-#Preview {
+#Preview("Map centered on Medellín") {
     let medellin = (lat: 6.25184, lon: -75.56359)
     let viewModel = CityMapViewModel(latitude: medellin.lat, longitude: medellin.lon, name: "Medellin")
     NavigationStack {

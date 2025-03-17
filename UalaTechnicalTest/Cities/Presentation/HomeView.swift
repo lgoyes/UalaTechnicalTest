@@ -21,11 +21,7 @@ class HomeFactory {
 class HomeViewModel: ObservableObject {
     @Published var loading = false
     @Published var cities: [CityViewModel] = []
-    @Published var selectedCity: CityViewModel? {
-        willSet {
-            deselect(city: selectedCity)
-        }
-    }
+    @Published var selectedCity: CityViewModel?
     
     private let listCitiesUseCase: any ListCitiesUseCase
     private let markCityAsFavoriteUseCase: any MarkCityAsFavoriteUseCase
@@ -34,7 +30,7 @@ class HomeViewModel: ObservableObject {
     private var rawCities: [City] = [] {
         didSet {
             cities = rawCities.map({
-                CityViewModelFactory().create(city: $0, selectedCityId: selectedCity?.id)
+                CityViewModelFactory().create(city: $0)
             })
         }
     }
@@ -75,12 +71,6 @@ class HomeViewModel: ObservableObject {
         loading = false
     }
     
-    private func deselect(city: CityViewModel?) {
-        if let previousSelectedCity = selectedCity, let previousSelectedIndex = cities.firstIndex(where: { $0.id == previousSelectedCity.id }) {
-            cities[previousSelectedIndex].selected = false
-        }
-    }
-    
     func getSelectedCityMapModel() -> CityMapViewModel? {
         guard let selectedCityModel = selectedCity, let selectedCity = rawCities.first(where: { $0.id == selectedCityModel.id }) else {
             return nil
@@ -89,11 +79,7 @@ class HomeViewModel: ObservableObject {
     }
     
     func select(city: CityViewModel) {
-        deselect(city: selectedCity)
-        if let currentSelectedIndex = cities.firstIndex(where: { $0.id == city.id }) {
-            cities[currentSelectedIndex].selected = true
-            selectedCity = city
-        }
+        selectedCity = city
     }
     
     func favoriteTapped(city: CityViewModel) {
@@ -132,18 +118,21 @@ struct HomeView: View {
     @StateObject var viewModel: HomeViewModel
     
     var body: some View {
-        HomeMadeNavigationSplitView(loading: viewModel.loading, selected: $viewModel.selectedCity) { shouldNavigate in
-            CityListFactory()
-                .create(cities: viewModel.cities, shouldNavigate: shouldNavigate, onFavoriteTapped: { city in
-                    viewModel.favoriteTapped(city: city)
-                }) { selectedCity in
-                    print("City selected: \(selectedCity.title)")
-                    viewModel.select(city: selectedCity)
+        Group {
+            if viewModel.loading {
+                ProgressView()
+            } else {
+                HomeMadeNavigationSplitView(selected: $viewModel.selectedCity) { shouldNavigate in
+                    CityListFactory()
+                        .create(cities: viewModel.cities, selectedCity: $viewModel.selectedCity, shouldNavigate: shouldNavigate, onFavoriteTapped: { city in
+                            viewModel.favoriteTapped(city: city)
+                        })
+                } detail: { selectedCity in
+                    CityMapView(viewModel: viewModel.getSelectedCityMapModel()!)
+                } defaultDetail: {
+                    Text("No city selected")
                 }
-        } detail: { selectedCity in
-            CityMapView(viewModel: viewModel.getSelectedCityMapModel()!)
-        } defaultDetail: {
-            Text("No city selected")
+            }
         }
         .onAppear() {
             viewModel.processOnAppear()
@@ -155,28 +144,17 @@ struct HomeView: View {
 class FakeListCitiesUseCase: ListCitiesUseCase {
     var result: [City] = []
     func execute() async throws(ListCitiesUseCaseError) {}
-    
     func getResult() throws(ListCitiesUseCaseError) -> Array<City> {
         result
     }
 }
 class FakeMarkFavoriteUseCase: MarkCityAsFavoriteUseCase {
-    func set(newFavorite: City) {
-        
-    }
-    
-    func execute() async throws(MarkCityAsFavoriteUseCaseError) {
-        
-    }
+    func set(newFavorite: City) {}
+    func execute() async throws(MarkCityAsFavoriteUseCaseError) {}
 }
 class FakeUnmarkFavoriteUseCase: UnmarkCityAsFavoriteUseCase {
-    func set(favoriteToRemove: City) {
-        
-    }
-    
-    func execute() async throws(UnmarkCityAsFavoriteUseCaseError) {
-        
-    }
+    func set(favoriteToRemove: City) {}
+    func execute() async throws(UnmarkCityAsFavoriteUseCaseError) {}
 }
 #endif
 

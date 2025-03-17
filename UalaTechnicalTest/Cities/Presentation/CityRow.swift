@@ -19,8 +19,7 @@ struct CityRowView: View {
     }
     let model: CityViewModel
     var onFavoriteTapped: (() -> Void)?
-    var onSelected: (() -> Void)?
-
+    
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
@@ -32,13 +31,6 @@ struct CityRowView: View {
                     onFavoriteTapped?()
                 }
         }
-        .contentShape(Rectangle())
-        .simultaneousGesture(
-            TapGesture().onEnded {
-                onSelected?()
-            }
-        )
-        .background(model.selected ? Constant.SelectedCell.color : .clear)
     }
     
     // Just for showing-off
@@ -56,11 +48,16 @@ struct CityRowView: View {
     }
 }
 
-#Preview(traits: .sizeThatFitsLayout) {
-    @Previewable @State var viewModel = CityViewModel(id: 1, title: "Medellín, CO", subtitle: "Lat: 1, Lon: 2", favorite: false, selected: false)
+#Preview("Some cell, no favorite", traits: .sizeThatFitsLayout) {
+    @Previewable @State var viewModel = CityViewModel(id: 1, title: "Medellín, CO", subtitle: "Lat: 1, Lon: 2", favorite: false)
     CityRowView(model: viewModel, onFavoriteTapped: {
         viewModel.favorite.toggle()
-    }, onSelected:  {
-        viewModel.selected.toggle()
+    })
+}
+
+#Preview("Some cell, favorite", traits: .sizeThatFitsLayout) {
+    @Previewable @State var viewModel = CityViewModel(id: 1, title: "Medellín, CO", subtitle: "Lat: 1, Lon: 2", favorite: true)
+    CityRowView(model: viewModel, onFavoriteTapped: {
+        viewModel.favorite.toggle()
     })
 }

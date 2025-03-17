@@ -9,13 +9,9 @@ import SwiftUI
 
 struct CityListViewModel {
     let cities: [CityViewModel]
+    @Binding var selectedCity: CityViewModel?
     let shouldNavigate: Bool
     let onFavoriteTapped: ((CityViewModel) -> Void)?
-    let onSelected: ((CityViewModel) -> Void)?
-    
-    func select(city: CityViewModel) {
-        onSelected?(city)
-    }
     
     func favoriteTapped(for city: CityViewModel) {
         onFavoriteTapped?(city)
@@ -25,58 +21,33 @@ struct CityListViewModel {
 struct CityListView: View {
     var viewModel: CityListViewModel
     
-    private func createCell(with city: CityViewModel) -> CityRowView {
-        CityRowView(model: city) {
-            viewModel.favoriteTapped(for: city)
-        } onSelected: {
-            viewModel.select(city: city)
-        }
-    }
-    
     var body: some View {
-        // There are so many cities, so I needed an extra optimization fot the list.
-        ScrollView {
-            LazyVStack {
-                ForEach(viewModel.cities, id: \.id) { city in
-                    if viewModel.shouldNavigate {
-                        NavigationLink(value: city) {
-                            createCell(with: city)
-                        }
-                    } else {
-                        createCell(with: city)
-                    }
-                }
+        // There were so many cities, so I needed an extra optimization fot the list.
+        LazyListView(shouldNavigate: viewModel.shouldNavigate, entries: viewModel.cities, selection: viewModel.$selectedCity) { city in
+            CityRowView(model: city) {
+                viewModel.favoriteTapped(for: city)
             }
         }
     }
 }
 
 class CityListFactory {
-    func create(cities: [CityViewModel], shouldNavigate: Bool, onFavoriteTapped: ((CityViewModel) -> Void)? = nil, onSelected: ((CityViewModel) -> Void)? = nil) -> CityListView {
-        let viewModel = CityListViewModel(cities: cities, shouldNavigate: shouldNavigate, onFavoriteTapped: onFavoriteTapped, onSelected: onSelected)
+    func create(cities: [CityViewModel], selectedCity: Binding<CityViewModel?>, shouldNavigate: Bool, onFavoriteTapped: ((CityViewModel) -> Void)? = nil) -> CityListView {
+        let viewModel = CityListViewModel(cities: cities, selectedCity: selectedCity, shouldNavigate: shouldNavigate, onFavoriteTapped: onFavoriteTapped)
         return CityListView(viewModel: viewModel)
     }
 }
 
-#Preview {
+#Preview("List with a selected item") {
     @Previewable @State var cities: [CityViewModel] = [
-        CityViewModel(id: 1, title: "Medellín, CO", subtitle: "Lat: 1, Lon: 2", favorite: false, selected: false),
-        CityViewModel(id: 2, title: "Bogotá, CO", subtitle: "Lat: 2, Lon: 3", favorite: false, selected: false)
+        CityViewModel(id: 1, title: "Medellín, CO", subtitle: "Lat: 1, Lon: 2", favorite: false),
+        CityViewModel(id: 2, title: "Bogotá, CO", subtitle: "Lat: 2, Lon: 3", favorite: true)
     ]
-    @Previewable @State var selected: CityViewModel? = nil
+    @Previewable @State var selected: CityViewModel? = CityViewModel(id: 1, title: "Medellín, CO", subtitle: "Lat: 1, Lon: 2", favorite: false)
 
-    let viewModel = CityListViewModel(cities: cities, shouldNavigate: false) { city in
+    let viewModel = CityListViewModel(cities: cities, selectedCity: $selected, shouldNavigate: false) { city in
         if let index = cities.firstIndex(where: { $0.id == city.id } ) {
             cities[index].favorite.toggle()
-        }
-    } onSelected: { city in
-        for i in (0..<cities.count) {
-            if cities[i].id != city.id {
-                cities[i].selected = false
-            } else {
-                cities[i].selected = true
-                selected = cities[i]
-            }
         }
     }
 
