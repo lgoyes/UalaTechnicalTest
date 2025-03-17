@@ -5,7 +5,7 @@
 //  Created by Luis David Goyes Garces on 11/3/25.
 //
 
-class Coordinate {
+struct Coordinate {
     let latitude: Double
     let longitude: Double
     init(latitude: Double, longitude: Double) {
@@ -14,7 +14,7 @@ class Coordinate {
     }
 }
 
-class City {
+struct City {
     let country: String
     let name: String
     let id: Int

@@ -5,7 +5,7 @@
 //  Created by Luis David Goyes Garces on 14/3/25.
 //
 
-typealias CityLocalRepository = CityCreateLocalRepository & CityListLocalRepository & CityUpdateLocalRepository & CityRemoveLocalRepository
+typealias CityLocalRepository = CityCreateLocalRepository & CityListLocalRepository & CityRemoveLocalRepository
 
 class DefaultCityLocalRepository {
     private enum Error: Swift.Error {
@@ -35,12 +35,17 @@ class DefaultCityLocalRepository {
 }
 
 extension DefaultCityLocalRepository: CityCreateLocalRepository {
-    func create(city: City) {
+    func create(city: City) throws(CityCreateLocalRepositoryError){
+        let existingCity = try? getCity(by: city.id)
+        guard existingCity == nil else {
+            throw .cityAlreadyExists
+        }
+        
         let dbCity = mapper.invert(city)
         db.create(city: dbCity)
     }
 }
-//3119841
+
 extension DefaultCityLocalRepository: CityListLocalRepository {
     func listAllCities() throws(CityListLocalRepositoryError) -> [City] {
         do {
@@ -63,23 +68,6 @@ extension DefaultCityLocalRepository: CityRemoveLocalRepository {
     }
 }
 
-extension DefaultCityLocalRepository: CityUpdateLocalRepository {
-    func update(city: City) throws(CityUpdateLocalRepositoryError) {
-        let dbCityToUpdate: DBCity
-        do {
-            dbCityToUpdate = try getCity(by: city.id)
-        } catch {
-            throw .cityNotFoundInDB
-        }
-        dbCityToUpdate.name = city.name
-        dbCityToUpdate.country = city.country
-        dbCityToUpdate.favorite = city.favorite
-        dbCityToUpdate.latitude = city.coordinates.latitude
-        dbCityToUpdate.longitude = city.coordinates.longitude
-    }
-}
-
 /// TODO:
-/// 1. Remove update
 /// 2. Change create to check first that no other entry exists with the same id
 

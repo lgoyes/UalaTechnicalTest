@@ -22,17 +22,18 @@ final class DefaultUnmarkCityAsFavoriteUseCaseTests {
     func execute() async throws {
         GIVEN_someNewFavoriteCityWhichIsAlreadyInTheFavoritesList()
         try await WHEN_execute()
-        THEN_itShouldRemoveTheCityFromFavoriteList()
+        await THEN_itShouldRemoveTheCityFromFavoriteList()
     }
     
     private func GIVEN_someNewFavoriteCityWhichIsAlreadyInTheFavoritesList() {
-        localRepository.cities = [CityFactory.create(id: 1), CityFactory.create(id:2)]
+        localRepository.result = [CityFactory.create(id: 1), CityFactory.create(id:2)]
         someCity = CityFactory.create(id: 1)
         self.sut.set(favoriteToRemove: someCity)
     }
     private func WHEN_execute() async throws {
         try await self.sut.execute()
     }
+    @MainActor
     private func THEN_itShouldRemoveTheCityFromFavoriteList() {
         #expect(try! self.localRepository.listAllCities().count == 1)
         #expect(try! self.localRepository.listAllCities()[0].id == 2)
@@ -54,7 +55,7 @@ final class DefaultUnmarkCityAsFavoriteUseCaseTests {
     }
     
     private func GIVEN_someFavoriteCityToRemoveWhichIsNotInTheFavoritesList() {
-        localRepository.cities = [CityFactory.create(id: 1), CityFactory.create(id:2)]
+        localRepository.result = [CityFactory.create(id: 1), CityFactory.create(id:2)]
         someCity = CityFactory.create(id: 10)
         self.sut.set(favoriteToRemove: someCity)
     }

@@ -6,7 +6,7 @@
 //
 
 enum MarkCityAsFavoriteUseCaseError: Swift.Error {
-    case newFavoriteNotSet, errorReadingDB
+    case newFavoriteNotSet, favoriteAlreadyExists
 }
 
 protocol MarkCityAsFavoriteUseCase: Command where ErrorType == MarkCityAsFavoriteUseCaseError {
@@ -14,14 +14,11 @@ protocol MarkCityAsFavoriteUseCase: Command where ErrorType == MarkCityAsFavorit
 }
 
 class DefaultMarkCityAsFavoriteUseCase: MarkCityAsFavoriteUseCase {
-    typealias LocalRepository = CityListLocalRepository & CityCreateLocalRepository
     
-    private var favoriteEntries: [City]
     private var newFavorite: City!
-    private var localRepository: LocalRepository
+    private var localRepository: CityCreateLocalRepository
     
-    init(localRepository: LocalRepository) {
-        self.favoriteEntries = []
+    init(localRepository: CityCreateLocalRepository) {
         self.localRepository = localRepository
     }
     
@@ -31,10 +28,7 @@ class DefaultMarkCityAsFavoriteUseCase: MarkCityAsFavoriteUseCase {
     
     func execute() async throws(MarkCityAsFavoriteUseCaseError) {
         try validateNewFavoriteSet()
-        try await fetchFavoriteEntriesFromDisk()
-        if !isNewFavoriteAlreadyInList() {
-            await saveNewFavorite()
-        }
+        try await saveNewFavorite()
     }
     
     private func validateNewFavoriteSet() throws(MarkCityAsFavoriteUseCaseError) {
@@ -42,17 +36,11 @@ class DefaultMarkCityAsFavoriteUseCase: MarkCityAsFavoriteUseCase {
             throw .newFavoriteNotSet
         }
     }
-    private func fetchFavoriteEntriesFromDisk() async throws(MarkCityAsFavoriteUseCaseError) {
+    private func saveNewFavorite() async throws(MarkCityAsFavoriteUseCaseError) {
         do {
-            favoriteEntries = try await localRepository.listAllCities()
+            try await localRepository.create(city: newFavorite)
         } catch {
-            throw MarkCityAsFavoriteUseCaseError.errorReadingDB
+            throw .favoriteAlreadyExists
         }
-    }
-    private func isNewFavoriteAlreadyInList() -> Bool {
-        return favoriteEntries.contains(where: { $0.id == newFavorite.id })
-    }
-    private func saveNewFavorite() async {
-        await localRepository.create(city: newFavorite)
     }
 }

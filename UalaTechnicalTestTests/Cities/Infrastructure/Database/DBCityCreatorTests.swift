@@ -36,6 +36,7 @@ final class DBCityCreatorTests {
     }
     
     func THEN_itShouldAddItemToContext() throws {
-        #expect(try someContext.fetch(FetchDescriptor<DBCity>())[0] == someDBCity)
+        let result = try someContext.fetch(FetchDescriptor<DBCity>())[0]
+        #expect(DBCityComparator.compare(result, someDBCity))
     }
 }

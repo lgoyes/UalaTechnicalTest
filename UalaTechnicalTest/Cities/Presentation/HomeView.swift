@@ -41,14 +41,7 @@ class HomeViewModel: ObservableObject {
     private let listCitiesUseCase: any ListCitiesUseCase
     private let markCityAsFavoriteUseCase: any MarkCityAsFavoriteUseCase
     private let unmarkCityAsFavoriteUseCase: any UnmarkCityAsFavoriteUseCase
-    
-    private var rawCities: [City] = [] {
-        didSet {
-            cities = rawCities.map({
-                CityViewModelFactory().create(city: $0)
-            })
-        }
-    }
+    private var rawCities: [City] = []
     
     func filterCities() {
         var results = cities
@@ -76,6 +69,7 @@ class HomeViewModel: ObservableObject {
         startLoading()
         Task {
             await downloadData()
+            await presentCities()
             await stopLoading()
         }
     }
@@ -87,6 +81,13 @@ class HomeViewModel: ObservableObject {
     private func downloadData() async {
         await performRequest()
         await extractResults()
+    }
+    
+    @MainActor
+    private func presentCities() {
+        cities = rawCities.map({
+            CityViewModelFactory().create(city: $0)
+        })
     }
     
     private func performRequest() async {
@@ -108,34 +109,33 @@ class HomeViewModel: ObservableObject {
         return CityMapViewModel(latitude: selectedCity.coordinates.latitude, longitude: selectedCity.coordinates.longitude, name: selectedCityModel.title)
     }
     
-    func favoriteTapped(city: CityViewModel) {
-        print("\(city.favorite ? "Unmarking" : "Marking") \(city.title) as favorite...")
-        if let index = rawCities.firstIndex(where: { $0.id == city.id } ) {
-            let cityUnderInspection = rawCities[index]
-            if cityUnderInspection.favorite {
-                unmarkCityAsFavoriteUseCase.set(favoriteToRemove: cityUnderInspection)
-                Task {
-                    do {
-                        try await unmarkCityAsFavoriteUseCase.execute()
-                        cityUnderInspection.favorite = false
-                    } catch {
-                        print("Error: \(error.localizedDescription)")
-                    }
-                }
-            } else {
-                markCityAsFavoriteUseCase.set(newFavorite: cityUnderInspection)
-                Task {
-                    do {
-                        try await markCityAsFavoriteUseCase.execute()
-                        cityUnderInspection.favorite = true
-                    } catch {
-                        print("Error: \(error.localizedDescription)")
-                    }
-                }
-            }
-        }
+    @MainActor
+    private func updateCityViewModelFavorite(with city: City) {
+        let newFavoriteValue = !city.favorite
         if let index = cities.firstIndex(where: { $0.id == city.id } ) {
-            cities[index].favorite.toggle()
+            rawCities[index].favorite = newFavoriteValue
+            cities[index].favorite = newFavoriteValue
+        }
+    }
+    
+    func favoriteTapped(city: CityViewModel) async {
+        guard let updatedCityIndex = rawCities.firstIndex(where: { $0.id == city.id } ) else {
+            return
+        }
+        let updatedCity = rawCities[updatedCityIndex]
+        let useCase: any Command
+        if updatedCity.favorite {
+            useCase = unmarkCityAsFavoriteUseCase
+            unmarkCityAsFavoriteUseCase.set(favoriteToRemove: updatedCity)
+        } else {
+            useCase = markCityAsFavoriteUseCase
+            markCityAsFavoriteUseCase.set(newFavorite: updatedCity)
+        }
+        do {
+            try await useCase.execute()
+            await updateCityViewModelFavorite(with: updatedCity)
+        } catch {
+            print("Error: \(error.localizedDescription)")
         }
     }
 }
@@ -151,7 +151,9 @@ struct HomeView: View {
                 HomeMadeNavigationSplitView(selected: $viewModel.selectedCity) { shouldNavigate in
                     CityListFactory()
                         .create(cities: viewModel.filteredCities, selectedCity: $viewModel.selectedCity, shouldNavigate: shouldNavigate, onFavoriteTapped: { city in
-                            viewModel.favoriteTapped(city: city)
+                            Task {
+                                await viewModel.favoriteTapped(city: city)
+                            }
                         })
                         .searchable(text: $viewModel.searchText, prompt: "Search entries")
                         .toolbar {

@@ -10,7 +10,7 @@ import SwiftData
 
 class ModelContextStubFactory {
     func create() -> ModelContext {
-        let container = try! ModelContainerFactory().create(storedInMemory: false)
+        let container = try! ModelContainerFactory().create(storedInMemory: true)
         return ModelContext(container)
     }
 }

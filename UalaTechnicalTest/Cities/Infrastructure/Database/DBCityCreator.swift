@@ -18,7 +18,5 @@ class DefaultDBCityCreator: DBCityCreatable {
     }
     func create(city: DBCity) {
         context.insert(city)
-        // TODO organize properly
-        try! context.save()
     }
 }

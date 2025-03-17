@@ -14,14 +14,11 @@ protocol UnmarkCityAsFavoriteUseCase: Command where ErrorType == UnmarkCityAsFav
 }
 
 class DefaultUnmarkCityAsFavoriteUseCase: UnmarkCityAsFavoriteUseCase {
-    typealias LocalRepository = CityListLocalRepository & CityRemoveLocalRepository
     
-    private var favoriteEntries: [City]
     private var favoriteToRemove: City!
-    private var localRepository: LocalRepository
+    private var localRepository: CityRemoveLocalRepository
     
-    init(localRepository: LocalRepository) {
-        self.favoriteEntries = []
+    init(localRepository: CityRemoveLocalRepository) {
         self.localRepository = localRepository
     }
     
@@ -30,11 +27,11 @@ class DefaultUnmarkCityAsFavoriteUseCase: UnmarkCityAsFavoriteUseCase {
     }
     
     func execute() async throws(UnmarkCityAsFavoriteUseCaseError) {
-        try validateNewFavoriteSet()
+        try validateFavoriteToRemoveSet()
         try await tryToRemoveFavorite()
     }
     
-    private func validateNewFavoriteSet() throws(UnmarkCityAsFavoriteUseCaseError) {
+    private func validateFavoriteToRemoveSet() throws(UnmarkCityAsFavoriteUseCaseError) {
         if favoriteToRemove == nil {
             throw .favoriteToRemoveNotSet
         }

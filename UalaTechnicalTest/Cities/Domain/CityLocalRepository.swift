@@ -5,31 +5,23 @@
 //  Created by Luis David Goyes Garces on 12/3/25.
 //
 
-@MainActor
+enum CityCreateLocalRepositoryError: Swift.Error {
+    case cityAlreadyExists
+}
 protocol CityCreateLocalRepository {
-    func create(city: City)
+    @MainActor func create(city: City) throws(CityCreateLocalRepositoryError)
 }
 
 enum CityRemoveLocalRepositoryError: Swift.Error {
     case cityNotFoundInDB
 }
-@MainActor
 protocol CityRemoveLocalRepository {
-    func remove(city: City) throws(CityRemoveLocalRepositoryError)
-}
-
-enum CityUpdateLocalRepositoryError: Swift.Error {
-    case cityNotFoundInDB
-}
-@MainActor
-protocol CityUpdateLocalRepository {
-    func update(city: City) throws(CityUpdateLocalRepositoryError)
+    @MainActor func remove(city: City) throws(CityRemoveLocalRepositoryError)
 }
 
 enum CityListLocalRepositoryError: Swift.Error {
     case couldNotListEntries
 }
-@MainActor
 protocol CityListLocalRepository {
-    func listAllCities() throws(CityListLocalRepositoryError) -> [City]
+    @MainActor func listAllCities() throws(CityListLocalRepositoryError) -> [City]
 }

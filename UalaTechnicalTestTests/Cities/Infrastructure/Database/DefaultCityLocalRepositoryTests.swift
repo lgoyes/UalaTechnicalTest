@@ -36,9 +36,8 @@ final class DefaultCityLocalRepositoryTests {
     private var city: City!
     private var cities: [City]!
     private var db: DBFacadeStub
-    private var delayed_WHEN_remove_closure: (() throws -> Void)?
-    private var delayed_WHEN_list_closure: (() throws -> [City])?
-    private var delayed_WHEN_update_closure: (() throws -> Void)?
+    private var delayed_WHEN_remove_closure: (() async throws -> Void)?
+    private var delayed_WHEN_list_closure: (() async throws -> [City])?
     
     init() {
         self.db = DBFacadeStub()
@@ -49,9 +48,9 @@ final class DefaultCityLocalRepositoryTests {
 // MARK: - Create
 extension DefaultCityLocalRepositoryTests {
     @Test("GIVEN some city, WHEN create, THEN it should add city to DB")
-    func create() {
+    func create() async throws {
         GIVEN_someValidCity()
-        WHEN_create()
+        try await WHEN_create()
         THEN_itShouldAddCityToDB()
     }
     
@@ -60,8 +59,8 @@ extension DefaultCityLocalRepositoryTests {
         db.cities = [DBCityMapper().invert(city)]
     }
     
-    func WHEN_create() {
-        sut.create(city: city)
+    func WHEN_create() async throws {
+        try await sut.create(city: city)
     }
     
     func THEN_itShouldAddCityToDB() {
@@ -72,22 +71,22 @@ extension DefaultCityLocalRepositoryTests {
 // MARK: - Remove
 extension DefaultCityLocalRepositoryTests {
     @Test("GIVEN some valid city, WHEN remove, THEN it should remove entry from db and it should not throw any error")
-    func remove() {
+    func remove() async {
         GIVEN_someValidCity()
         WHEN_remove()
-        THEN_itShouldNotThrowAnyError()
+        await THEN_itShouldNotThrowAnyError()
         THEN_itShouldRemoveEntryFromDB()
     }
         
     func WHEN_remove() {
         delayed_WHEN_remove_closure = { [unowned self] in
-            try sut.remove(city: city)
+            try await sut.remove(city: city)
         }
     }
     
-    func THEN_itShouldNotThrowAnyError() {
-        #expect(throws: Never.self) {
-            try delayed_WHEN_remove_closure!()
+    func THEN_itShouldNotThrowAnyError() async {
+        await #expect(throws: Never.self) {
+            try await delayed_WHEN_remove_closure!()
         }
     }
     
@@ -96,10 +95,10 @@ extension DefaultCityLocalRepositoryTests {
     }
     
     @Test("GIVEN some invalid city, WHEN remove, THEN it should throw an error and should not invoke remove on db")
-    func failedRemove() {
+    func failedRemove() async {
         GIVEN_someInvalidCity()
         WHEN_remove()
-        THEN_itShouldThrowACityNotFoundError()
+        await THEN_itShouldThrowACityNotFoundError()
         THEN_itShouldNotInvokeRemoveOnDB()
     }
     
@@ -113,55 +112,9 @@ extension DefaultCityLocalRepositoryTests {
         #expect(db.removeCalled == false)
     }
     
-    func THEN_itShouldThrowACityNotFoundError() {
-        #expect(throws: CityRemoveLocalRepositoryError.cityNotFoundInDB) {
-            try delayed_WHEN_remove_closure!()
-        }
-    }
-}
-
-// MARK: - Update
-extension DefaultCityLocalRepositoryTests {
-    @Test("GIVEN some valid city, WHEN update, THEN it should update entry from db and it should not throw any error")
-    func update() {
-        GIVEN_someCitiesInDB()
-        GIVEN_someUpdatedCity()
-        WHEN_update()
-        THEN_itShouldNotThrowAnyUpdateError()
-        THEN_itShouldUpdateEntryFromDB()
-    }
-    
-    func GIVEN_someUpdatedCity() {
-        city = City(country: Constant.updatedCountry, name: CityConstant.someName, id: CityConstant.someId, favorite: CityConstant.favorite, coordinates: CoordinateFactory.createSomeCoordinates())
-    }
-        
-    func WHEN_update() {
-        delayed_WHEN_update_closure = { [unowned self] in
-            try sut.update(city: city)
-        }
-    }
-    
-    func THEN_itShouldNotThrowAnyUpdateError() {
-        #expect(throws: Never.self) {
-            try delayed_WHEN_update_closure!()
-        }
-    }
-    
-    func THEN_itShouldUpdateEntryFromDB() {
-        #expect(db.cities[0].country == Constant.updatedCountry)
-    }
-    
-    @Test("GIVEN some invalid city, WHEN update, THEN it should throw an error")
-    func failedUpdate() {
-        GIVEN_someCitiesInDB()
-        GIVEN_someInvalidCity()
-        WHEN_update()
-        THEN_itShouldThrowACityNotFoundUpdateError()
-    }
-    
-    func THEN_itShouldThrowACityNotFoundUpdateError() {
-        #expect(throws: CityUpdateLocalRepositoryError.cityNotFoundInDB) {
-            try delayed_WHEN_update_closure!()
+    func THEN_itShouldThrowACityNotFoundError() async {
+        await #expect(throws: CityRemoveLocalRepositoryError.cityNotFoundInDB) {
+            try await delayed_WHEN_remove_closure!()
         }
     }
 }
@@ -170,10 +123,10 @@ extension DefaultCityLocalRepositoryTests {
 
 extension DefaultCityLocalRepositoryTests {
     @Test("GIVEN some cities, WHEN list, THEN it should return the cities from the DB")
-    func list() {
+    func list() async {
         GIVEN_someCitiesInDB()
         WHEN_list()
-        THEN_itShouldNotThrowAnyListError()
+        await THEN_itShouldNotThrowAnyListError()
         THEN_itShouldReturnEntriesFromDB()
     }
     
@@ -183,13 +136,13 @@ extension DefaultCityLocalRepositoryTests {
         
     func WHEN_list() {
         delayed_WHEN_list_closure = { [unowned self] in
-            try sut.listAllCities()
+            try await sut.listAllCities()
         }
     }
     
-    func THEN_itShouldNotThrowAnyListError() {
-        #expect(throws: Never.self) {
-            cities = try delayed_WHEN_list_closure!()
+    func THEN_itShouldNotThrowAnyListError() async {
+        await #expect(throws: Never.self) {
+            cities = try await delayed_WHEN_list_closure!()
         }
     }
     
@@ -199,19 +152,19 @@ extension DefaultCityLocalRepositoryTests {
     }
     
     @Test("GIVEN db listing entries with some error, WHEN list, THEN it should throw an error")
-    func failedList() {
+    func failedList() async {
         GIVEN_errorWhenDBListsEntries()
         WHEN_list()
-        THEN_itShouldThrowAListError()
+        await THEN_itShouldThrowAListError()
     }
     
     func GIVEN_errorWhenDBListsEntries() {
         db.error = .listingFailed
     }
     
-    func THEN_itShouldThrowAListError() {
-        #expect(throws: CityListLocalRepositoryError.couldNotListEntries) {
-            cities = try delayed_WHEN_list_closure!()
+    func THEN_itShouldThrowAListError() async {
+        await #expect(throws: CityListLocalRepositoryError.couldNotListEntries) {
+            cities = try await delayed_WHEN_list_closure!()
         }
     }
 }

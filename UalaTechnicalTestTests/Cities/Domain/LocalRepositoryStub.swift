@@ -8,27 +8,26 @@
 @testable import UalaTechnicalTest
 
 class LocalRepositoryStub: CityLocalRepository {
-    var cities: [City] = []
-    var error: CityListLocalRepositoryError?
-    func create(city: City) {
-        cities.append(city)
+    var result: [City] = []
+    var listError: CityListLocalRepositoryError?
+    func create(city: City) throws(CityCreateLocalRepositoryError) {
+        if result.contains(where: { $0.id == city.id }) {
+            throw .cityAlreadyExists
+        }
+        result.append(city)
     }
     
     func listAllCities() throws(CityListLocalRepositoryError) -> [City] {
-        if let error {
-            throw error
+        if let listError {
+            throw listError
         }
-        return cities
+        return result
     }
     
     func remove(city: City) throws(CityRemoveLocalRepositoryError) {
-        guard cities.contains(where: { $0.id == city.id }) else {
+        guard result.contains(where: { $0.id == city.id }) else {
             throw .cityNotFoundInDB
         }
-        cities.removeAll { $0.id == city.id }
-    }
-    
-    func update(city: City) throws(CityUpdateLocalRepositoryError) {
-        
+        result.removeAll { $0.id == city.id }
     }
 }

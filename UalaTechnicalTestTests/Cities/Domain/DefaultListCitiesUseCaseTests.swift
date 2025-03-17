@@ -11,7 +11,7 @@ import SwiftData
 
 final class CityListRemoteRepositoryStub: CityListRemoteRepository {
     var error: CityListRemoteRepositoryError?
-    var result: [City] = [CityFactory.create()]
+    var result: [City] = []
     func listAllCities() async throws(CityListRemoteRepositoryError) -> [City] {
         if let error {
             throw error
@@ -20,31 +20,11 @@ final class CityListRemoteRepositoryStub: CityListRemoteRepository {
     }
 }
 
-final class CityLocalRepositoryStub: CityLocalRepository {
-    var result: [City] = []
-
-    func create(city: City) {
-        
-    }
-    
-    func listAllCities() throws(CityListLocalRepositoryError) -> [City] {
-        result
-    }
-    
-    func remove(city: City) throws(CityRemoveLocalRepositoryError) {
-        
-    }
-    
-    func update(city: City) throws(CityUpdateLocalRepositoryError) {
-        
-    }
-}
-
 final class DefaultListCitiesUseCaseTests {
     
     private let sut: DefaultListCitiesUseCase
     private let remoteRepository: CityListRemoteRepositoryStub
-    private let localRepository: CityLocalRepositoryStub
+    private let localRepository: LocalRepositoryStub
     
     init() {
         remoteRepository = .init()
@@ -95,20 +75,23 @@ final class DefaultListCitiesUseCaseTests {
     
     @Test("GIVEN some successful result from the remote repository and some favorite entries, WHEN execute, THEN it should modify the remote entries, merging the favorites from the local repository")
     func markFavorites() async throws {
+        GIVEN_someSuccessfulResponseFromRemoteRepository()
         GIVEN_someFavoriteEntries()
         try await WHEN_execute()
         try THEN_itShouldModifyTheRemoteEntriesMergingTheLocalFavorites()
     }
     
+    func GIVEN_someSuccessfulResponseFromRemoteRepository() {
+        remoteRepository.result = [ CityFactory.create(id: 1, favorite: false), CityFactory.create(id: 2)]
+    }
+    
     func GIVEN_someFavoriteEntries() {
-        var city = CityFactory.create()
-        city.favorite = true
-        localRepository.result = [city]
+        localRepository.result = [CityFactory.create(id: 1, favorite: true)]
     }
     
     func THEN_itShouldModifyTheRemoteEntriesMergingTheLocalFavorites() throws {
         let result = try sut.getResult()
-        #expect(result != remoteRepository.result)
+        #expect(result[0] != remoteRepository.result[0])
         #expect(result[0] == localRepository.result[0])
     }
     
