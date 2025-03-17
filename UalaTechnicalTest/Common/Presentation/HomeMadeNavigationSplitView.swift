@@ -21,8 +21,8 @@ struct HomeMadeNavigationSplitView<SideBar: View, Detail: View, DefaultDetail: V
     var body: some View {
         GeometryReader { geometry in
             let isPortrait = geometry.size.width < geometry.size.height
-            if isPortrait {
-                NavigationStack {
+            NavigationStack {
+                if isPortrait {
                     sidebar(true)
                         .navigationDestination(for: DestinationHashKeyType.self) { hash in
                             detail(hash)
@@ -30,20 +30,20 @@ struct HomeMadeNavigationSplitView<SideBar: View, Detail: View, DefaultDetail: V
                                     selected = nil
                                 }
                         }
-                }
-            } else {
-                let sidebarWidth = geometry.size.width * HomeMadeNavigationSplitViewConstant.sidebarWidthPercentage
-                let detailWidth = geometry.size.width * (1 - HomeMadeNavigationSplitViewConstant.sidebarWidthPercentage)
-                
-                HStack {
-                    sidebar(false)
-                        .frame(width: sidebarWidth)
-                    if let selected {
-                        detail(selected)
-                            .frame(width: detailWidth)
-                    } else {
-                        defaultDetail()
-                            .frame(width: detailWidth)
+                } else {
+                    let sidebarWidth = geometry.size.width * HomeMadeNavigationSplitViewConstant.sidebarWidthPercentage
+                    let detailWidth = geometry.size.width * (1 - HomeMadeNavigationSplitViewConstant.sidebarWidthPercentage)
+                    
+                    HStack {
+                        sidebar(false)
+                            .frame(width: sidebarWidth)
+                        if let selected {
+                            detail(selected)
+                                .frame(width: detailWidth)
+                        } else {
+                            defaultDetail()
+                                .frame(width: detailWidth)
+                        }
                     }
                 }
             }

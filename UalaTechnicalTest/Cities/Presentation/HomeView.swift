@@ -19,10 +19,25 @@ class HomeFactory {
 }
 
 class HomeViewModel: ObservableObject {
+    @Published var showFavoritesOnly = false {
+        didSet {
+            filterCities()
+        }
+    }
+    @Published var searchText = "" {
+        didSet {
+            filterCities()
+        }
+    }
     @Published var loading = false
-    @Published var cities: [CityViewModel] = []
+    @Published var filteredCities: [CityViewModel] = []
     @Published var selectedCity: CityViewModel?
     
+    private var cities: [CityViewModel] = [] {
+        didSet {
+            filterCities()
+        }
+    }
     private let listCitiesUseCase: any ListCitiesUseCase
     private let markCityAsFavoriteUseCase: any MarkCityAsFavoriteUseCase
     private let unmarkCityAsFavoriteUseCase: any UnmarkCityAsFavoriteUseCase
@@ -33,6 +48,21 @@ class HomeViewModel: ObservableObject {
                 CityViewModelFactory().create(city: $0)
             })
         }
+    }
+    
+    func filterCities() {
+        var results = cities
+        
+        if showFavoritesOnly {
+            results = results.filter { $0.favorite }
+        }
+        
+        if !searchText.isEmpty {
+            results = results.filter { $0.title.lowercased().hasPrefix(searchText.lowercased())
+            }
+        }
+        
+        filteredCities = results
     }
     
     init(listCitiesUseCase: any ListCitiesUseCase, markCityAsFavoriteUseCase: any MarkCityAsFavoriteUseCase, unmarkCityAsFavoriteUseCase: any UnmarkCityAsFavoriteUseCase) {
@@ -78,10 +108,6 @@ class HomeViewModel: ObservableObject {
         return CityMapViewModel(latitude: selectedCity.coordinates.latitude, longitude: selectedCity.coordinates.longitude, name: selectedCityModel.title)
     }
     
-    func select(city: CityViewModel) {
-        selectedCity = city
-    }
-    
     func favoriteTapped(city: CityViewModel) {
         print("\(city.favorite ? "Unmarking" : "Marking") \(city.title) as favorite...")
         if let index = rawCities.firstIndex(where: { $0.id == city.id } ) {
@@ -124,9 +150,18 @@ struct HomeView: View {
             } else {
                 HomeMadeNavigationSplitView(selected: $viewModel.selectedCity) { shouldNavigate in
                     CityListFactory()
-                        .create(cities: viewModel.cities, selectedCity: $viewModel.selectedCity, shouldNavigate: shouldNavigate, onFavoriteTapped: { city in
+                        .create(cities: viewModel.filteredCities, selectedCity: $viewModel.selectedCity, shouldNavigate: shouldNavigate, onFavoriteTapped: { city in
                             viewModel.favoriteTapped(city: city)
                         })
+                        .searchable(text: $viewModel.searchText, prompt: "Search entries")
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button(action: { viewModel.showFavoritesOnly.toggle() }) {
+                                    Image(systemName: viewModel.showFavoritesOnly ? "star.fill" : "star") // Toggle icon
+                                        .foregroundColor(viewModel.showFavoritesOnly ? .yellow : .gray)
+                                }
+                            }
+                        }
                 } detail: { selectedCity in
                     CityMapView(viewModel: viewModel.getSelectedCityMapModel()!)
                 } defaultDetail: {
@@ -159,7 +194,7 @@ class FakeUnmarkFavoriteUseCase: UnmarkCityAsFavoriteUseCase {
 #endif
 
 
-#Preview() {
+#Preview("Portrait", traits: .portrait) {
     @Previewable @State var viewModel: HomeViewModel = {
         let downloadEntriesUseCase = FakeListCitiesUseCase()
         downloadEntriesUseCase.result = [
@@ -175,7 +210,7 @@ class FakeUnmarkFavoriteUseCase: UnmarkCityAsFavoriteUseCase {
     HomeView(viewModel: viewModel)
 }
 
-#Preview() {
+#Preview("Landscape right", traits: .landscapeRight) {
     let viewModel: HomeViewModel = {
         let downloadEntriesUseCase = FakeListCitiesUseCase()
         let markFavoriteUseCase = FakeMarkFavoriteUseCase()
