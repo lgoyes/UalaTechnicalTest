@@ -54,17 +54,38 @@ extension DefaultCityLocalRepositoryTests {
         THEN_itShouldAddCityToDB()
     }
     
-    func GIVEN_someCityThatDoesNotExistInDB() {
+    private func GIVEN_someCityThatDoesNotExistInDB() {
         city = CityFactory.create(id: 1)
         db.cities = [DBCityMapper().invert(CityFactory.create(id: 2))]
     }
     
-    func WHEN_create() async throws {
+    private func WHEN_create() async throws {
         try await sut.create(city: city)
     }
     
-    func THEN_itShouldAddCityToDB() {
+    private func THEN_itShouldAddCityToDB() {
         #expect(db.createCalled)
+    }
+    
+    @Test("GIVEN some city that exists in DB, WHEN create, THEN it should throw cityAlreadyExists error")
+    func cityAlreadyExistsCreationError() async throws {
+        GIVEN_someCityThatExistsInDB()
+        await #expect(throws: CityCreateLocalRepositoryError.cityAlreadyExists) {
+            try await WHEN_create()
+        }
+    }
+    
+    @Test("GIVEN some error from DB, WHEN create, THEN it should throw unexpectedError error")
+    func errorFromDBDuringCreation() async throws {
+        GIVEN_someErrorFromDB()
+        GIVEN_someCityThatExistsInDB()
+        await #expect(throws: CityCreateLocalRepositoryError.unexpectedError) {
+            try await WHEN_create()
+        }
+    }
+    
+    private func GIVEN_someErrorFromDB() {
+        db.error = .listingFailed
     }
 }
 
@@ -107,13 +128,22 @@ extension DefaultCityLocalRepositoryTests {
         THEN_itShouldNotInvokeRemoveOnDB()
     }
     
-    func THEN_itShouldNotInvokeRemoveOnDB() {
+    private func THEN_itShouldNotInvokeRemoveOnDB() {
         #expect(db.removeCalled == false)
     }
     
-    func THEN_itShouldThrowACityNotFoundError() async {
+    private func THEN_itShouldThrowACityNotFoundError() async {
         await #expect(throws: CityRemoveLocalRepositoryError.cityNotFoundInDB) {
             try await delayed_WHEN_remove_closure!()
+        }
+    }
+    
+    @Test("GIVEN some error from DB, WHEN remove, THEN it should throw unexpectedError error")
+    func errorFromDBDuringRemotion() async throws {
+        GIVEN_someErrorFromDB()
+        GIVEN_someCityThatExistsInDB()
+        await #expect(throws: CityRemoveLocalRepositoryError.unexpectedError) {
+            try await sut.remove(city: city)
         }
     }
 }

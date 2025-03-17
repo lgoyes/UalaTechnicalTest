@@ -36,7 +36,15 @@ class DefaultCityLocalRepository {
 
 extension DefaultCityLocalRepository: CityCreateLocalRepository {
     func create(city: City) throws(CityCreateLocalRepositoryError){
-        let existingCity = try? getCity(by: city.id)
+        let existingCity: DBCity?
+        do {
+            existingCity = try getCity(by: city.id)
+        } catch .couldNotListEntries {
+            throw .unexpectedError
+        } catch {
+            existingCity = nil
+        }
+        
         guard existingCity == nil else {
             throw .cityAlreadyExists
         }
@@ -59,15 +67,16 @@ extension DefaultCityLocalRepository: CityListLocalRepository {
 
 extension DefaultCityLocalRepository: CityRemoveLocalRepository {
     func remove(city: City) throws(CityRemoveLocalRepositoryError){
+        let existingCity: DBCity
         do {
-            let dbCityToRemove = try getCity(by: city.id)
-            db.remove(city: dbCityToRemove)
+            existingCity = try getCity(by: city.id)
+        } catch .couldNotListEntries {
+            throw .unexpectedError
         } catch {
             throw .cityNotFoundInDB
         }
+        
+        db.remove(city: existingCity)
     }
 }
-
-/// TODO:
-/// 2. Change create to check first that no other entry exists with the same id
 

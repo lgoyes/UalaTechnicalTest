@@ -6,14 +6,14 @@
 //
 
 enum CityCreateLocalRepositoryError: Swift.Error {
-    case cityAlreadyExists
+    case cityAlreadyExists, unexpectedError
 }
 protocol CityCreateLocalRepository {
     @MainActor func create(city: City) throws(CityCreateLocalRepositoryError)
 }
 
 enum CityRemoveLocalRepositoryError: Swift.Error {
-    case cityNotFoundInDB
+    case cityNotFoundInDB, unexpectedError
 }
 protocol CityRemoveLocalRepository {
     @MainActor func remove(city: City) throws(CityRemoveLocalRepositoryError)
