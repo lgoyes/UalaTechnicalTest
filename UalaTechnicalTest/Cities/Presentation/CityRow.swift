@@ -33,9 +33,11 @@ struct CityRowView: View {
                 }
         }
         .contentShape(Rectangle())
-        .onTapGesture {
-            onSelected?()
-        }
+        .simultaneousGesture(
+            TapGesture().onEnded {
+                onSelected?()
+            }
+        )
         .background(model.selected ? Constant.SelectedCell.color : .clear)
     }
     

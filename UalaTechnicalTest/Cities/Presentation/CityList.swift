@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CityListViewModel {
     let cities: [CityViewModel]
-    let selectedCity: CityViewModel?
+    let shouldNavigate: Bool
     let onFavoriteTapped: ((CityViewModel) -> Void)?
     let onSelected: ((CityViewModel) -> Void)?
     
@@ -25,15 +25,25 @@ struct CityListViewModel {
 struct CityListView: View {
     var viewModel: CityListViewModel
     
+    private func createCell(with city: CityViewModel) -> CityRowView {
+        CityRowView(model: city) {
+            viewModel.favoriteTapped(for: city)
+        } onSelected: {
+            viewModel.select(city: city)
+        }
+    }
+    
     var body: some View {
         // There are so many cities, so I needed an extra optimization fot the list.
         ScrollView {
             LazyVStack {
                 ForEach(viewModel.cities, id: \.id) { city in
-                    CityRowView(model: city) {
-                        viewModel.favoriteTapped(for: city)
-                    } onSelected: {
-                        viewModel.select(city: city)
+                    if viewModel.shouldNavigate {
+                        NavigationLink(value: city) {
+                            createCell(with: city)
+                        }
+                    } else {
+                        createCell(with: city)
                     }
                 }
             }
@@ -42,8 +52,8 @@ struct CityListView: View {
 }
 
 class CityListFactory {
-    func create(cities: [CityViewModel], selectedCity: CityViewModel?, onFavoriteTapped: ((CityViewModel) -> Void)? = nil, onSelected: ((CityViewModel) -> Void)? = nil) -> CityListView {
-        let viewModel = CityListViewModel(cities: cities, selectedCity: selectedCity, onFavoriteTapped: onFavoriteTapped, onSelected: onSelected)
+    func create(cities: [CityViewModel], shouldNavigate: Bool, onFavoriteTapped: ((CityViewModel) -> Void)? = nil, onSelected: ((CityViewModel) -> Void)? = nil) -> CityListView {
+        let viewModel = CityListViewModel(cities: cities, shouldNavigate: shouldNavigate, onFavoriteTapped: onFavoriteTapped, onSelected: onSelected)
         return CityListView(viewModel: viewModel)
     }
 }
@@ -55,7 +65,7 @@ class CityListFactory {
     ]
     @Previewable @State var selected: CityViewModel? = nil
 
-    let viewModel = CityListViewModel(cities: cities, selectedCity: selected) { city in
+    let viewModel = CityListViewModel(cities: cities, shouldNavigate: false) { city in
         if let index = cities.firstIndex(where: { $0.id == city.id } ) {
             cities[index].favorite.toggle()
         }

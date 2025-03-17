@@ -21,7 +21,11 @@ class HomeFactory {
 class HomeViewModel: ObservableObject {
     @Published var loading = false
     @Published var cities: [CityViewModel] = []
-    @Published var selectedCity: CityViewModel?
+    @Published var selectedCity: CityViewModel? {
+        willSet {
+            deselect(city: selectedCity)
+        }
+    }
     
     private let listCitiesUseCase: any ListCitiesUseCase
     private let markCityAsFavoriteUseCase: any MarkCityAsFavoriteUseCase
@@ -71,10 +75,21 @@ class HomeViewModel: ObservableObject {
         loading = false
     }
     
-    func select(city: CityViewModel) {
+    private func deselect(city: CityViewModel?) {
         if let previousSelectedCity = selectedCity, let previousSelectedIndex = cities.firstIndex(where: { $0.id == previousSelectedCity.id }) {
             cities[previousSelectedIndex].selected = false
         }
+    }
+    
+    func getSelectedCityMapModel() -> CityMapViewModel? {
+        guard let selectedCityModel = selectedCity, let selectedCity = rawCities.first(where: { $0.id == selectedCityModel.id }) else {
+            return nil
+        }
+        return CityMapViewModel(latitude: selectedCity.coordinates.latitude, longitude: selectedCity.coordinates.longitude, name: selectedCityModel.title)
+    }
+    
+    func select(city: CityViewModel) {
+        deselect(city: selectedCity)
         if let currentSelectedIndex = cities.firstIndex(where: { $0.id == city.id }) {
             cities[currentSelectedIndex].selected = true
             selectedCity = city
@@ -117,20 +132,22 @@ struct HomeView: View {
     @StateObject var viewModel: HomeViewModel
     
     var body: some View {
-        CityListFactory()
-            .create(cities: viewModel.cities, selectedCity: viewModel.selectedCity, onFavoriteTapped: { city in
-                viewModel.favoriteTapped(city: city)
-            }) { selectedCity in
-                viewModel.select(city: selectedCity)
-            }
-            .overlay {
-                if viewModel.loading {
-                    ProgressView()
+        HomeMadeNavigationSplitView(loading: viewModel.loading, selected: $viewModel.selectedCity) { shouldNavigate in
+            CityListFactory()
+                .create(cities: viewModel.cities, shouldNavigate: shouldNavigate, onFavoriteTapped: { city in
+                    viewModel.favoriteTapped(city: city)
+                }) { selectedCity in
+                    print("City selected: \(selectedCity.title)")
+                    viewModel.select(city: selectedCity)
                 }
-            }
-            .onAppear() {
-                viewModel.processOnAppear()
-            }
+        } detail: { selectedCity in
+            CityMapView(viewModel: viewModel.getSelectedCityMapModel()!)
+        } defaultDetail: {
+            Text("No city selected")
+        }
+        .onAppear() {
+            viewModel.processOnAppear()
+        }
     }
 }
 

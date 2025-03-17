@@ -18,11 +18,10 @@ struct CityMapView: View {
     private enum Constant {
         static let span = 0.2
     }
-    @State private var cameraPosition: MapCameraPosition
-    
+    @State private var cameraPosition: MapCameraPosition = .automatic
     let viewModel: CityMapViewModel
-    init(viewModel: CityMapViewModel) {
-        self.viewModel = viewModel
+    
+    private func updateCameraPosition() {
         let region = MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: viewModel.latitude, longitude: viewModel.longitude),
             span: MKCoordinateSpan(latitudeDelta: Constant.span, longitudeDelta: Constant.span)
@@ -32,7 +31,14 @@ struct CityMapView: View {
     
     var body: some View {
         Map(position: $cameraPosition)
+            .onChange(of: viewModel.latitude, { oldValue, newValue in
+                updateCameraPosition()
+            })
+            .onAppear {
+                updateCameraPosition()
+            }
             .navigationTitle(viewModel.name)
+        
     }
 }
 

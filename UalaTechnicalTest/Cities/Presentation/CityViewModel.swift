@@ -5,7 +5,7 @@
 //  Created by Luis David Goyes Garces on 15/3/25.
 //
 
-struct CityViewModel {
+struct CityViewModel: Hashable {
     let id: Int
     let title: String
     let subtitle: String
