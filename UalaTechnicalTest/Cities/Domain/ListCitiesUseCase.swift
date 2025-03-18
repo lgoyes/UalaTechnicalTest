@@ -72,7 +72,7 @@ class DefaultListCitiesUseCase: ListCitiesUseCase {
             let entryUnderTest = result[entryIndex]
             if let associatedLocalEntryIndex = favoriteEntries.firstIndex(where: { $0.id == entryUnderTest.id }) {
                 let _ = favoriteEntries.remove(at: associatedLocalEntryIndex)
-                result[entryIndex].favorite = true
+                result[entryIndex] = result[entryIndex].toggleFavorite()
             }
         }
     }

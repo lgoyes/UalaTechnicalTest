@@ -18,7 +18,7 @@ struct City {
     let country: String
     let name: String
     let id: Int
-    var favorite: Bool
+    let favorite: Bool
     let coordinates: Coordinate
     init(country: String, name: String, id: Int, favorite: Bool, coordinates: Coordinate) {
         self.country = country
@@ -26,5 +26,9 @@ struct City {
         self.id = id
         self.favorite = favorite
         self.coordinates = coordinates
+    }
+    
+    func toggleFavorite() -> City {
+        return City(country: country, name: name, id: id, favorite: !favorite, coordinates: coordinates)
     }
 }

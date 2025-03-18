@@ -72,7 +72,7 @@ class DefaultToggleFavoriteUseCase: ToggleFavoriteUseCase {
     }
     
     private func toggleFavoriteInRawCities(updatedCityIndex: Int) {
-        cities[updatedCityIndex].favorite.toggle()
+        cities[updatedCityIndex] = cities[updatedCityIndex].toggleFavorite()
     }
     
     func getResult() throws(ToggleFavoriteUseCaseError) -> Array<City> {
