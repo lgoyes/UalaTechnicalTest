@@ -39,9 +39,12 @@ struct LazyListView<CellModel, CellType: View>: View where CellModel: Hashable, 
             : Color(UIColor.systemBackground)
         )
         .contentShape(Rectangle())
-        .onTapGesture {
-            selection = entry
-        }
+        .simultaneousGesture(
+            TapGesture().onEnded {
+                selection = entry
+
+            }
+        )
     }
     
     var body: some View {
