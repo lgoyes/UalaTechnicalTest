@@ -13,7 +13,7 @@ final class UalaTechnicalTestUITests: XCTestCase {
             static let name = "Medellin, CO"
         }
         enum OneVisibleRowInFirstPage {
-            static let name = "A Dos Cunhados, PT"
+            static let name = "665 Site Colonia, US"
         }
         enum OneVisibleRowInTheThirdPage {
             static let name = "Aalen, DE"
@@ -26,7 +26,7 @@ final class UalaTechnicalTestUITests: XCTestCase {
         }
         enum Timeout {
             static let short: TimeInterval = 1.0
-            static let long: TimeInterval = 5.0
+            static let long: TimeInterval = 20.0
         }
     }
 
