@@ -1,10 +1,4 @@
-//
-//  README.md
-//  UalaTechnicalTest
-//
-//  Created by Luis David Goyes Garces on 17/3/25.
-//
-
+# Uala technical test. David Goyes. iOS Developer.
 # Documentation
 
 ## Architecture
@@ -36,7 +30,25 @@ Entries marked as "favorite" should persist between app launches. Therefore, a l
 
 ## Cities' Domain Layer
 
+The abstractions for the Infrastructure's repository are defined here (i.e. `CityLocalRepository` and `CityRemoteRepository`). Take into account that the DTOs from that layer (e.g, `APICity`, `DBCity`) are not used in the interface of this repositories.
 
+Business rules are defined as *Use Case*s, who are also known as "Actions" or "Interactors", depending on the implemented architecture. In my case, I'd rather calling them "Use Cases" since I feel more aligned with the architecture definition proposed by Craig Larman in "Applying UML and Patterns. An Introduction to Object-Oriented Analysis and Design and the Unified Process".
+Toggling favorites, listing and filtering cities are business rules and, as a result, defined as "use cases" (`ToggleFavoriteUseCase`, `ListCitiesUseCase` and `FilterCitiesUseCase`, respectively). Notice how the use cases conform to the `Command` and `Resultable` protocols. These operations are separated at interface level according to the *Command-Query Responsibility Segregation* principle. In order to use these use cases, one must first inject the required input, execute it, and then extract the result. The `Command` interface also refers to the "Command" design-pattern from the GoF catalog.
+Factories are used to create each Use case, except for `FilterCitiesUseCase` - Due to its simplicity, it is created without factory.
+
+## Cities' Presentation Layer
+
+My implementation of View-ViewModel is based on Larman's definition of the Controller GRASP-pattern and DDD's presenter. Since the View should not know the details of Domain's entities, the ViewModel has all the data that it needs. The ViewModel does not hold any direct reference to domain's entities, as it is sometimes implemented in the industry, but instead, it's created from the domain's entities by means of a factory.
+`CityRowView` draws a title, a subtitle and a favorite icon. `CityList` draws a list of rows with a search-bar on top to allow the user to filter some items. `CityMap` draws a map centered on the city location. `HomeView` controls the navigation between the list and the map, or presents a `ProgressView` if the content is loading.
+
+Some specials considerations were taken into account:
+1. Due to the large amount of cities being loaded, Apple's native `List` view experienced some latency. As a result, a `LazyListView` was build with a nested combination of `ScrollView`, a `LazyVStack`, and a `ForEach`. This impelmentation has a better drawing performance.
+2. Since the native `List` view was not used, Apple's native `NavigationSplitView` could not be used either. Therefore, a "home-made" version (`HomeMadeNavigationSplitView`) was implemented, in order to perform the master-detail behavior.
+
+## Automated tests
+
+This project uses unit test mostly, and has some integration tests. The test coverage is 90.3%. Some parts of the app were not tested because some preconditions did not required to do so, or some parts were too hard to test. In the latter case, the Martin-Fowler's Humble-Object testing pattern.
+Some UI tests were created for illustration purposes. However, I'd rather have "snap-shot" tests instead. I did not write them since I required a third-party library.
 
 
 ## Glossary
@@ -56,7 +68,6 @@ Entries marked as "favorite" should persist between app launches. Therefore, a l
 - **Mapper:** A component or pattern that transforms data from one representation to another, often used to convert between domain models, DTOs, or database entities. It helps maintain separation of concerns and improves maintainability.
 - **Facade Pattern:** A structural design pattern (GoF) that provides a simplified, unified interface to a complex subsystem. It improves usability, reduces dependencies, and promotes loose coupling by shielding clients from underlying complexities.
 - **Indirection (GRASP):** A design principle that introduces an intermediary to decouple components, reducing direct dependencies. This improves flexibility, maintainability, and adaptability by enabling changes without affecting dependent modules.
-
 - **Command-Query Responsibility Segregation (CQRS):** CQRS is a software architecture pattern that separates write operations (commands) from read operations (queries) to optimize performance, scalability, and maintainability.
     - **Command:** Modify system state (e.g., creating, updating, deleting data). Often require business rules and validation. Can trigger domain events or side effects.
     - **Query:** Retrieve data without modifying the system. Can be optimized for fast reads (e.g., denormalized views).
@@ -64,7 +75,13 @@ Entries marked as "favorite" should persist between app launches. Therefore, a l
     - **Entity Methods:** Actions that modify the state of an entity while maintaining invariants (business rules that must always hold). 
     - **Domain Services:** Actions that involve multiple entities or perform complex domain logic that doesn't naturally belong to a single entity.
     - **Application Services:** Actions that orchestrate domain logic but don’t contain business rules themselves. They usually coordinate domain services, repositories, and events.
+* **Use Case:** In application architecture, a Use Case represents a specific business operation or workflow, defining how the system interacts with users or other systems. It encapsulates application logic, orchestrates domain operations, and ensures business rules are applied correctly. Often implemented as an Application Service in Domain-Driven Design (DDD).
+* **Interactor:** In Clean Architecture, an Interactor is the core component of the Use Case layer, responsible for executing business logic and coordinating interactions between repositories, entities, and external services. It ensures that application rules are enforced while keeping the domain independent of frameworks and UI concerns.
 - **Repository:** In Domain-Driven Design (DDD), a Repository is a design pattern that acts as an abstraction layer between the domain model and the data persistence mechanism. It provides a way to retrieve, store, and manage aggregates without exposing the underlying data source details. Examples of data source: a database or an API.
+- **Command Pattern:** A behavioral design pattern (GoF) that encapsulates a request as an object, allowing parameterization, queuing, logging, and undo functionality. It promotes decoupling between senders and receivers of requests, improving flexibility and maintainability.
+- **Presenter:** In DDD, a Presenter is responsible for formatting and preparing data from the Use Case (Domain Layer) before sending it to the View (Presentation Layer). It ensures separation of concerns by keeping business logic out of the UI.
 - **Value Object:** In Domain-Driven Design (DDD), a *Value Object* is a lightweight, immutable object that represents a concept with no distinct identity but carries meaning through its attributes. Unlike Entities, which have an identity (id), Value Objects are defined by their values. Once value objects are created, they cannot be changed. Two Value Objects with the same values are considered equal. A value object can enforce rules and constraints (e.g. "Class invariants") and it ensures its own correctness when created.
 - **Entity:** In Domain-Driven Design (DDD), an *Entity* is an object that is defined by its identity rather than its attributes. Even if its attributes change over time, it remains the same entity as long as its identity stays the same.
-
+- **Humble Object:** A design technique that separates testable logic from hard-to-test components (e.g., UI, databases, or external dependencies). It moves logic into a separate, easily testable class while keeping the untestable part minimal, improving testability and maintainability.
+- **Controller (GRASP):** A design pattern that assigns the responsibility of handling user input to a dedicated controller. It acts as an intermediary between the UI and the domain, coordinating requests, invoking business logic, and updating the view while maintaining separation of concerns.
+- **Snapshot Tests:** A testing technique that captures the output of a component (e.g., UI, JSON, or data structures) and compares it to a previously stored "snapshot." If differences are detected, the test fails, helping to catch unintended changes in appearance or structure.
