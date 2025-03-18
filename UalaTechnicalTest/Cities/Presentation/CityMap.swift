@@ -14,6 +14,21 @@ struct CityMapViewModel: Equatable {
     let name: String
 }
 
+struct CityMapViewModelFactory {
+    func create(from city: CityViewModel) -> CityMapViewModel? {
+        let parts = city.subtitle.split(separator: ", ")
+        guard parts.count == 2,
+           let latPart = parts.first?.split(separator: ":").last,
+           let lonPart = parts.last?.split(separator: ":").last,
+           let latitude = Double(latPart.trimmingCharacters(in: .whitespaces)),
+           let longitude = Double(lonPart.trimmingCharacters(in: .whitespaces)) else {
+            return nil
+        }
+        
+        return CityMapViewModel(latitude: latitude, longitude: longitude, name: city.title)
+    }
+}
+
 struct CityMapView: View {
     private enum Constant {
         static let span = 0.2

@@ -77,7 +77,11 @@ struct HomeView: View {
                             }
                         }
                 } detail: { selectedCity in
-                    CityMapView(viewModel: viewModel.getSelectedCityMapModel()!)
+                    if let model = CityMapViewModelFactory().create(from: selectedCity){
+                        CityMapView(viewModel: model)
+                    } else {
+                        EmptyView()
+                    }
                 } defaultDetail: {
                     Text(Constant.EmptyMap.title)
                 }

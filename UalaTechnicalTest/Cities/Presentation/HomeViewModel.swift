@@ -105,13 +105,6 @@ class HomeViewModel: ObservableObject {
         loading = false
     }
     
-    func getSelectedCityMapModel() -> CityMapViewModel? {
-        guard let selectedCityModel = selectedCity, let selectedCity = rawCities.first(where: { $0.id == selectedCityModel.id }) else {
-            return nil
-        }
-        return CityMapViewModel(latitude: selectedCity.coordinates.latitude, longitude: selectedCity.coordinates.longitude, name: selectedCityModel.title)
-    }
-    
     func favoriteTapped(city: CityViewModel) {
         Task {
             toggleFavoriteUseCase.set(favoriteCandidateId: city.id)
